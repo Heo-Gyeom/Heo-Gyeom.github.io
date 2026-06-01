@@ -53,11 +53,15 @@ redirect_from:
 
 ## 기술 스택
 
-**언어**
-- 사용 언어 (예: Python, Java, JavaScript)
+**데이터 파이프라인**
+- **Kafka** — 3노드 브로커 클러스터 구성 및 고가용성 검증 / 토픽 단위 데이터 파이프라인 구축 (DB · Spark · ELK)
+- **Airflow** — DAG 기반 외부 시스템 연동 및 알림 구성 / 일일 배치 수집 → S3 저장
 
-**프레임워크 / 라이브러리**
-- 사용 프레임워크 (예: Spring, React, Flask)
+**모니터링**
+- **Grafana / Prometheus** — 사용자 만족도 기반 모델 재학습 트리거 구성 / Karpenter 스케일링 및 RDS Aurora 상태 모니터링
+- **ELK** — 빌드 로그(ERROR · WARN · FATAL) 시각화 및 배포 위험도 지표 검토
 
-**도구 / 환경**
-- 사용 도구 (예: Git, Docker, AWS)
+**클라우드 / 인프라**
+- **AWS (정적 배포)** — Route 53 · CloudFront · S3 프론트 배포, GitHub Actions 기반 S3 · ECR CI/CD 구성
+- **AWS (EKS 멀티리전)** — 서울↔일본 리전 RDS Aurora 복제 환경에서 지연시간·유실률 검증
+- **Terraform** — AWS 인프라 구성 구조 이해 및 리소스 배포 흐름·상태 관리 학습

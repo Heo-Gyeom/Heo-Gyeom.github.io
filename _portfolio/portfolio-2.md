@@ -1,5 +1,5 @@
 ---
-title: "프로젝트 1 이름"
+title: "프로젝트 2 이름"
 excerpt: "프로젝트에 대한 한 줄 설명<br/><img src='/images/500x300.png'>"
 collection: portfolio
 ---

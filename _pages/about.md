@@ -1,11 +1,11 @@
----
-permalink: /
-title: "허겸 | 포트폴리오"
-author_profile: true
-redirect_from:
-  - /about/
-  - /about.html
----
+#---
+#permalink: /
+# title: "허겸 | 포트폴리오"
+#author_profile: true
+#redirect_from:
+#  - /about/
+#  - /about.html
+#---
 
 ## 자기소개
 
@@ -60,10 +60,8 @@ redirect_from:
 - GitHub Actions를 통해 프론트는 S3, 백엔드는 ECR로 빌드·배포 파이프라인 분리
 
 **AWS (EKS 멀티리전)**
-- EKS 클러스터 기반 컨테이너 오케스트레이션 환경 구성
-- Karpenter를 활용한 파드·노드 오토스케일링 적용
-- RDS Aurora 멀티리전(서울↔일본) 복제 환경 구성 및 데이터 지연시간·유실률 검증
-- 사용자 트래픽 시뮬레이션을 통한 멀티리전 안정성 테스트 진행
+- EKS 클러스터 기반 컨테이너 오케스트레이션 환경 구성 및 Karpenter 파드·노드 오토스케일링 적용
+- RDS Aurora 멀티리전(서울↔일본) 복제 환경에서 지연시간·유실률 검증 및 트래픽 시뮬레이션 테스트 진행
 
 **Terraform**
 - AWS 인프라 구성 구조 이해 및 리소스 배포 흐름·상태 관리 학습
@@ -73,25 +71,20 @@ redirect_from:
 **Data Pipeline**
 
 **Kafka**
-- 토픽·파티션·리플리케이션 개념 학습, 3노드 브로커 클러스터 구성
-- 마스터/슬레이브 분산 및 브로커 장애 발생 시 고가용성 동작 확인
-- 토픽 단위로 데이터를 분리해 DB 저장·Spark 분석·ELK 로그 모니터링 컨슈머로 라우팅하는 파이프라인 구축
-- 컨슈머 그룹별 독립 오프셋 관리로 동일 토픽을 다목적으로 소비하는 구조 설계
+-  토픽·파티션·리플리케이션 학습, 3노드 브로커 클러스터 구성 및 장애 발생 시 고가용성 동작 확인
+-  토픽 단위 데이터 분리로 DB 저장·Spark 분석·ELK 모니터링 파이프라인 구현, 컨슈머 그룹별 독립 구조 설계
 
 **Airflow**
-- EC2 환경에 Airflow 구축, Python Operator 기반 DAG 작성
-- Sensor · Connection · Hook을 활용한 외부 시스템 연동 및 Slack · Kakao 알림 구성
-- 프로젝트에서 일일 배치 수집 → S3 저장 구현, 이후 규모 검토 후 Crontab으로 경량화
+-  EC2 환경에 Airflow 구축, Python Operator 사용한 Sensor·Connection·Hook 기반 DAG 작성 및 Slack 알림 구성
+-  일일 배치 수집 → S3 저장 구현, 이후 규모 검토 후 Crontab으로 경량화
 
 ---
 
 **Monitoring**
 
 **Grafana / Prometheus**
-- MLOps 프로젝트에서 Elasticsearch 연동으로 사용자 만족도(긍정/부정) 실시간 모니터링
-- 불만족 비율 30% 초과 시 모델 재학습 트리거 자동 동작 구성
-- EKS 환경의 Karpenter 기반 파드·노드 스케일링 지표 수집 및 대시보드 시각화
-- CloudWatch 연동으로 AWS 리소스 상태 및 RDS Aurora 지연 통합 모니터링
+- MLOps 프로젝트에서 Elasticsearch 연동으로 사용자 만족도 실시간 모니터링 및 불만족 30% 초과 시 모델 재학습 트리거 구성
+- EKS 환경의 Karpenter 스케일링 지표 대시보드 시각화 및 CloudWatch 연동으로 AWS 리소스·RDS Aurora 통합 모니터링
 
 **ELK**
 - 빌드 시 발생하는 ERROR · WARN · FATAL 로그를 Elasticsearch · Kibana로 시각화

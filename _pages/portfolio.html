@@ -353,27 +353,24 @@ author_profile: true
       <span class="pf-metric-value">100%</span>
       <span class="pf-metric-label">데이터 정합성</span>
     </div>
-    <div class="pf-metric">
-      <span class="pf-metric-value">0회</span>
-      <span class="pf-metric-label">사람 개입</span>
-    </div>
   </div>
 
   <div class="pf-tags">
     <span class="pf-tag">AWS EKS</span>
     <span class="pf-tag">Aurora Global DB</span>
     <span class="pf-tag">Route 53</span>
-    <span class="pf-tag">Step Functions</span>
     <span class="pf-tag">Terraform</span>
     <span class="pf-tag">GitHub Actions</span>
     <span class="pf-tag">ArgoCD</span>
     <span class="pf-tag">Karpenter</span>
+    <span class="pf-tag">Prometheus</span>
+    <span class="pf-tag">Grafana</span>
   </div>
 
   <div class="pf-section">
     <div class="pf-section-title">Architecture</div>
     <div class="pf-arch">
-      <span class="pf-todo">/images/once-architecture.png 업로드 시 표시됩니다</span>
+      <img src="{{ base_path }}/images/once-architecture.png" alt="GlobalNews AI 멀티리전 DR 아키텍처">
     </div>
   </div>
 
@@ -382,15 +379,24 @@ author_profile: true
     <div class="pf-contrib">
       <div class="pf-contrib-item">
         <div class="pf-contrib-head">CI/CD 파이프라인 설계</div>
-        <div class="pf-contrib-body pf-todo">작성 예정</div>
+        <div class="pf-contrib-body">
+          코드 push → Docker 이미지 빌드 → ECR push → manifest 레포 태그 자동 업데이트로 이어지는 백엔드 CI 파이프라인을 구성했습니다.
+          프론트엔드는 pnpm 빌드 → S3 sync → CloudFront 캐시 무효화까지 한 번에 자동화했습니다.
+        </div>
       </div>
       <div class="pf-contrib-item">
-        <div class="pf-contrib-head">DR 시나리오 설계 및 실행</div>
-        <div class="pf-contrib-body pf-todo">작성 예정</div>
+        <div class="pf-contrib-head">DR 시나리오 설계</div>
+        <div class="pf-contrib-body">
+          서울 ALB 장애 주입 → CloudFront Origin Failover 자동 전환 → Lambda 트리거로 도쿄 Pod 기동 → Aurora Planned Failover까지의
+          전체 전환 흐름을, <strong>장애 발생 시 자동으로 동작</strong>하도록 설계하였습니다.
+        </div>
       </div>
       <div class="pf-contrib-item">
         <div class="pf-contrib-head">데이터 정합성 검증</div>
-        <div class="pf-contrib-body pf-todo">작성 예정</div>
+        <div class="pf-contrib-body">
+          8개 Phase 부하 테스트를 설계·실행해 모든 부하 조건에서 Aurora 복제 지연 <strong>평균 100ms 미만</strong>을 실측했고,
+          서울/도쿄 데이터 건수 비교로 <strong>유실 0건</strong>을 확인했습니다.
+        </div>
       </div>
     </div>
   </div>
@@ -418,8 +424,18 @@ author_profile: true
       <details class="pf-reflect">
         <summary>회고 보기</summary>
         <div class="pf-reflect-body">
-          <p>A안(<code>maxIdleTime</code>)을 "evict 주기가 서버 종료 타이밍과 겹친다"는 이유로 기각했지만, 사후 검토 결과 NAT GW idle timeout이 350초이므로 <code>maxIdleTime</code>을 20~30초로 잡으면 서버보다 훨씬 먼저 evict해 동일하게 해결할 수 있었음. <strong>기각 근거는 사실 서버 측 idle timeout을 사전 측정하지 않은 상태의 추정이었고, 정보 부족을 옵션의 결함으로 잘못 해석한 셈.</strong></p>
-          <p>채택한 <code>newConnection()</code>은 매 요청마다 TLS 핸드셰이크 비용과 ephemeral port 소모가 누적됨. 다음 개선 방향은 <strong><code>maxIdleTime</code> + <code>maxLifeTime</code> + Retry 3계층 구성</strong>, 또는 커넥션 관리·재시도·SigV4가 내장된 <strong>AWS SDK for Java v2(<code>BedrockRuntimeAsyncClient</code>) 전환</strong> 검토 중.</p>
+          <p><strong>처음 기각했던 선택지가 사실은 충분히 가능한 안이었다.</strong></p>
+          <p>처음엔 A안(연결을 풀에 보관하되, 일정 시간 안 쓴 건 미리 제거하기)을 골랐다가 <em>"내가 제거하는 타이밍과 서버가 끊는 타이밍이 겹치면 의미 없겠다"</em>는 이유로 기각했다. 그런데 나중에 알아보니 AWS의 NAT Gateway는 약 5분(350초) 이상 안 쓴 연결만 끊고, Bedrock도 비슷하게 보수적이다. <strong>내가 "20~30초 안 쓰면 제거"로 설정만 했어도 서버가 끊기 한참 전에 안전하게 정리됐을 일이었다.</strong></p>
+          <p>결국 A안이 부족했던 게 아니라, 내가 "서버가 언제 연결을 끊는지"를 측정하지 않은 채 추측으로만 기각한 게 문제였다. <strong>정보가 부족했던 것을 옵션 자체의 결함으로 잘못 해석한 셈.</strong></p>
+
+          <p><strong>채택한 방식에도 보이지 않는 비용이 있다.</strong></p>
+          <p>매 요청마다 새 연결을 만들면 HTTPS 보안 협상(TLS handshake)에 시간이 들고, 동시 요청이 많아지면 OS가 사용하는 임시 포트(ephemeral port)가 빠르게 소모돼 시스템 한계에 가까워질 수 있다. 지금은 안정적이지만 트래픽이 늘어나면 다른 문제가 생길 수 있는 구조다.</p>
+
+          <p>다음 개선 방향은 두 가지로 보고 있다.</p>
+          <ul>
+            <li><strong>3중 안전장치 구성</strong> — "오래 안 쓴 연결 미리 제거 + 너무 오래된 연결 강제 종료 + 그래도 실패하면 재시도"를 함께 적용</li>
+            <li><strong>AWS 공식 SDK로 전환</strong> — <code>BedrockRuntimeAsyncClient</code>는 연결 관리·재시도·인증을 이미 내장하고 있어, 직접 짠 코드보다 견고함</li>
+          </ul>
         </div>
       </details>
     </div>
@@ -445,8 +461,14 @@ author_profile: true
       <details class="pf-reflect">
         <summary>회고 보기</summary>
         <div class="pf-reflect-body">
-          <p><strong>테스트 방법론의 공백.</strong> Load / Stress는 설계했지만 Spike Test는 처음부터 고려하지 않았음. 정작 스케일 아웃 진행 중 503이 대량 발생하는 현상이 측정 중 우연히 드러났는데, 의도적으로 설계했다면 분당 거절률과 회복 시간을 정확히 수치화할 수 있었음. Phase 7에서는 측정 시작 조건을 사전에 정의하지 않아 데이터가 오염됨. <strong>검증 결과의 신뢰성은 데이터만큼 측정 조건의 명확함에 달려 있다는 걸 이 실수로 배움.</strong></p>
-          <p><strong>메시지 큐의 필요성.</strong> RPO는 통과했지만 스케일 아웃 진행 중 약 3분간 503이 대량 발생. Karpenter와 HPA가 아무리 빠르게 반응해도 노드·Pod 프로비저닝에는 물리적으로 ~3분이 걸리는, "트래픽 인입 속도 &gt; 인프라 확장 속도"라는 <strong>구조적 한계</strong>. Producer가 SQS에 즉시 적재하고 Consumer가 준비된 속도에 맞춰 처리하는 비동기 구조로 이 구간을 흡수해야 함. 다만 동기→비동기 전환은 idempotency 설계와 운영 복잡도를 수반하므로, 도입 후 동일 시나리오 재검증이 다음 단계.</p>
+          <p><strong>테스트 종류 중 빠뜨린 게 있었다.</strong></p>
+          <p>부하 테스트에는 여러 종류가 있다. 예상 트래픽을 견디는지 보는 Load Test, 한계점을 찾는 Stress Test는 했지만, <strong>트래픽이 0에서 갑자기 500으로 튀는 상황(Spike Test)</strong>은 처음부터 고려하지 않았다. 그런데 정작 측정 도중에 그 상황이 우연히 발생했다 — 서버가 자동으로 확장되는 동안 일부 요청이 거절되는 현상이었다. 의도적으로 설계했다면 거절률과 회복까지 걸린 시간을 정확한 숫자로 잡을 수 있었을 것이다.</p>
+          <p>또 한 번의 실수는 Phase 7에서 "언제부터 측정 데이터를 기록할지" 조건을 정하지 않은 것이다. 서버가 준비되기 전부터 측정이 시작돼 데이터가 오염됐다. <strong>검증 결과의 신뢰성은 데이터 양만큼이나 "어떤 조건에서 측정했는가"의 명확함에서 나온다는 걸 이 실수로 배웠다.</strong></p>
+
+          <p><strong>RPO는 통과했지만, 그 옆에서 다른 문제가 보였다.</strong></p>
+          <p>트래픽이 폭증할 때 서버가 자동으로 늘어나는 약 3분 동안 일부 요청이 거절(503 에러)됐다. Kubernetes의 자동 확장 기능(Karpenter, HPA)이 아무리 빨라도 서버를 새로 띄우는 데는 물리적으로 ~3분이 걸린다. 이건 <strong>"트래픽이 들어오는 속도가 서버가 늘어나는 속도보다 빠르다"</strong>는 구조적 한계라, 개별 설정을 조정해서 해결될 일이 아니다.</p>
+          <p>해결 방향은 사용자 요청을 서버가 즉시 처리하지 말고, <strong>메시지 큐(AWS SQS)에 일단 쌓아둔 뒤 서버가 준비된 만큼만 가져가서 처리</strong>하는 비동기 구조다. 이렇게 하면 서버가 확장되는 동안에도 요청이 큐에 안전하게 보관되고 거절되지 않는다.</p>
+          <p>다만 동기(요청→즉시 응답)에서 비동기(요청→큐 적재→나중에 처리)로 바꾸면 새로운 고민이 생긴다 — 같은 요청이 두 번 처리되지 않도록 막아야 하고(중복 처리 방지), 운영도 복잡해진다. 그래서 도입 후 같은 시나리오로 재검증하는 게 다음 단계다.</p>
         </div>
       </details>
     </div>

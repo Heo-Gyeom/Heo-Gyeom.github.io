@@ -193,32 +193,93 @@ author_profile: true
   line-height: 1.6;
 }
 
-/* 트러블슈팅 */
+/* 트러블슈팅 — 컴팩트 카드 */
 .pf-trouble {
-  padding: 0.9rem 1rem;
-  background: #fbfbfb;
+  border: 1px solid #e8e8e8;
   border-radius: 6px;
-  margin-bottom: 0.7rem;
+  margin-bottom: 1rem;
+  padding: 1.1rem 1.3rem;
+  background: #fff;
 }
 .pf-trouble-title {
   font-weight: 600;
-  font-size: 0.92rem;
+  font-size: 0.98rem;
   color: #222;
-  margin-bottom: 0.5rem;
-}
-.pf-trouble-row {
-  display: flex;
-  gap: 0.6rem;
-  font-size: 0.85rem;
-  line-height: 1.6;
   margin-bottom: 0.2rem;
 }
-.pf-trouble-label {
-  font-weight: 600;
-  color: #888;
-  min-width: 40px;
+.pf-trouble-headline {
+  font-size: 0.82rem;
+  color: #2d8a2d;
+  font-weight: 500;
+  margin-bottom: 0.9rem;
 }
-.pf-trouble-text { color: #555; }
+
+.pf-trouble-row {
+  display: grid;
+  grid-template-columns: 70px 1fr;
+  gap: 0.7rem;
+  font-size: 0.87rem;
+  line-height: 1.65;
+  margin-bottom: 0.45rem;
+  align-items: baseline;
+}
+.pf-trouble-label {
+  font-family: monospace;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: #fff;
+  background: #494e52;
+  padding: 0.15rem 0.5rem;
+  border-radius: 3px;
+  text-align: center;
+}
+.pf-trouble-text { color: #444; }
+.pf-trouble-text code {
+  background: #f3f3f3;
+  padding: 0.05rem 0.35rem;
+  border-radius: 3px;
+  font-size: 0.82rem;
+}
+
+/* 회고 드롭다운 */
+.pf-reflect {
+  margin-top: 1rem;
+  border-top: 1px dashed #ddd;
+  padding-top: 0.7rem;
+}
+.pf-reflect summary {
+  cursor: pointer;
+  font-size: 0.82rem;
+  color: #777;
+  font-weight: 600;
+  padding: 0.3rem 0;
+  list-style: none;
+  outline: none;
+}
+.pf-reflect summary::-webkit-details-marker { display: none; }
+.pf-reflect summary::before {
+  content: "▸ ";
+  color: #aaa;
+  display: inline-block;
+  width: 14px;
+}
+.pf-reflect[open] summary::before { content: "▾ "; }
+.pf-reflect-body {
+  font-size: 0.85rem;
+  color: #555;
+  line-height: 1.7;
+  padding: 0.6rem 0.5rem 0.3rem;
+}
+.pf-reflect-body p { margin: 0 0 0.7rem 0; }
+.pf-reflect-body p:last-child { margin-bottom: 0; }
+.pf-reflect-body strong { color: #333; }
+.pf-reflect-body code {
+  background: #f3f3f3;
+  padding: 0.05rem 0.35rem;
+  border-radius: 3px;
+  font-size: 0.82rem;
+}
 
 /* 링크 */
 .pf-links {
@@ -336,20 +397,59 @@ author_profile: true
 
   <div class="pf-section">
     <div class="pf-section-title">트러블슈팅</div>
+    <!-- ─── 트러블슈팅 #1 ─── -->
     <div class="pf-trouble">
-      <div class="pf-trouble-title pf-todo">문제 제목 작성 예정</div>
-      <div class="pf-trouble-row"><span class="pf-trouble-label">상황</span><span class="pf-trouble-text pf-todo">작성 예정</span></div>
-      <div class="pf-trouble-row"><span class="pf-trouble-label">원인</span><span class="pf-trouble-text pf-todo">작성 예정</span></div>
-      <div class="pf-trouble-row"><span class="pf-trouble-label">해결</span><span class="pf-trouble-text pf-todo">작성 예정</span></div>
-    </div>
-    <div class="pf-trouble">
-      <div class="pf-trouble-title pf-todo">문제 제목 작성 예정</div>
-      <div class="pf-trouble-row"><span class="pf-trouble-label">상황</span><span class="pf-trouble-text pf-todo">작성 예정</span></div>
-      <div class="pf-trouble-row"><span class="pf-trouble-label">원인</span><span class="pf-trouble-text pf-todo">작성 예정</span></div>
-      <div class="pf-trouble-row"><span class="pf-trouble-label">해결</span><span class="pf-trouble-text pf-todo">작성 예정</span></div>
-    </div>
-  </div>
+      <div class="pf-trouble-title">① AWS Bedrock AI 챗봇 간헐적 호출 실패</div>
+      <div class="pf-trouble-headline">Connection reset 발생률 5~10% → 0%</div>
 
+      <div class="pf-trouble-row">
+        <span class="pf-trouble-label">문제</span>
+        <span class="pf-trouble-text">챗봇 호출 시 <code>Connection reset by peer</code>가 20번 중 1~2번 발생. idle 후 첫 호출에 집중되고, 연속 호출 시에는 거의 없음.</span>
+      </div>
+      <div class="pf-trouble-row">
+        <span class="pf-trouble-label">원인</span>
+        <span class="pf-trouble-text">Reactor Netty 기본 커넥션 풀이 Bedrock 서버가 이미 종료한 idle 연결을 재사용 시도 → RST 수신.</span>
+      </div>
+      <div class="pf-trouble-row">
+        <span class="pf-trouble-label">해결</span>
+        <span class="pf-trouble-text"><code>ConnectionProvider.newConnection()</code>으로 풀 비활성화 + <code>WebClientRequestException</code>에 한해 지수 백오프 2회 재시도.</span>
+      </div>
+
+      <details class="pf-reflect">
+        <summary>회고 보기</summary>
+        <div class="pf-reflect-body">
+          <p>A안(<code>maxIdleTime</code>)을 "evict 주기가 서버 종료 타이밍과 겹친다"는 이유로 기각했지만, 사후 검토 결과 NAT GW idle timeout이 350초이므로 <code>maxIdleTime</code>을 20~30초로 잡으면 서버보다 훨씬 먼저 evict해 동일하게 해결할 수 있었음. <strong>기각 근거는 사실 서버 측 idle timeout을 사전 측정하지 않은 상태의 추정이었고, 정보 부족을 옵션의 결함으로 잘못 해석한 셈.</strong></p>
+          <p>채택한 <code>newConnection()</code>은 매 요청마다 TLS 핸드셰이크 비용과 ephemeral port 소모가 누적됨. 다음 개선 방향은 <strong><code>maxIdleTime</code> + <code>maxLifeTime</code> + Retry 3계층 구성</strong>, 또는 커넥션 관리·재시도·SigV4가 내장된 <strong>AWS SDK for Java v2(<code>BedrockRuntimeAsyncClient</code>) 전환</strong> 검토 중.</p>
+        </div>
+      </details>
+    </div>
+
+    <!-- ─── 트러블슈팅 #2 ─── -->
+    <div class="pf-trouble">
+      <div class="pf-trouble-title">② 멀티 리전 DR 환경에서의 RPO 검증 부하 테스트</div>
+      <div class="pf-trouble-headline">RPO &lt; 1초 SLO 충족 · 데이터 유실 0건 · Aurora Global DB (Seoul-Tokyo)</div>
+
+      <div class="pf-trouble-row">
+        <span class="pf-trouble-label">문제</span>
+        <span class="pf-trouble-text">서울-도쿄 Aurora Global DB 이중화는 구성했지만, 실제 부하 상황에서 RPO &lt; 1초 SLO 충족 여부를 검증하지 않은 상태.</span>
+      </div>
+      <div class="pf-trouble-row">
+        <span class="pf-trouble-label">설계</span>
+        <span class="pf-trouble-text">직접 DB 쓰기와 API 경유를 <strong>두 경로로 분리</strong>해 8개 Phase로 검증. 분리하지 않으면 "복제가 불안정한 건지 vs 요청이 DB에 도달조차 못 한 건지"를 구분할 수 없음. 주 지표는 CloudWatch <code>AuroraGlobalDBReplicationLag</code>.</span>
+      </div>
+      <div class="pf-trouble-row">
+        <span class="pf-trouble-label">결과</span>
+        <span class="pf-trouble-text">평균 복제 지연 28~73ms (부하 최대 구간에서 오히려 최저 28ms), 서울/도쿄 데이터 차이 0건, 처리 성공률 97.9%. <strong>RPO/유실/스케일링 SLO 전 항목 충족.</strong> Aurora 스토리지 레이어 복제는 앱 레이어와 독립적으로 동작함을 실측으로 확인.</span>
+      </div>
+
+      <details class="pf-reflect">
+        <summary>회고 보기</summary>
+        <div class="pf-reflect-body">
+          <p><strong>테스트 방법론의 공백.</strong> Load / Stress는 설계했지만 Spike Test는 처음부터 고려하지 않았음. 정작 스케일 아웃 진행 중 503이 대량 발생하는 현상이 측정 중 우연히 드러났는데, 의도적으로 설계했다면 분당 거절률과 회복 시간을 정확히 수치화할 수 있었음. Phase 7에서는 측정 시작 조건을 사전에 정의하지 않아 데이터가 오염됨. <strong>검증 결과의 신뢰성은 데이터만큼 측정 조건의 명확함에 달려 있다는 걸 이 실수로 배움.</strong></p>
+          <p><strong>메시지 큐의 필요성.</strong> RPO는 통과했지만 스케일 아웃 진행 중 약 3분간 503이 대량 발생. Karpenter와 HPA가 아무리 빠르게 반응해도 노드·Pod 프로비저닝에는 물리적으로 ~3분이 걸리는, "트래픽 인입 속도 &gt; 인프라 확장 속도"라는 <strong>구조적 한계</strong>. Producer가 SQS에 즉시 적재하고 Consumer가 준비된 속도에 맞춰 처리하는 비동기 구조로 이 구간을 흡수해야 함. 다만 동기→비동기 전환은 idempotency 설계와 운영 복잡도를 수반하므로, 도입 후 동일 시나리오 재검증이 다음 단계.</p>
+        </div>
+      </details>
+    </div>
   <div class="pf-links">
     <a class="pf-link" href="#">GitHub</a>
     <a class="pf-link" href="#">시연 영상</a>

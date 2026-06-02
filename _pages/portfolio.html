@@ -193,20 +193,24 @@ author_profile: true
 .pf-lightbox {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.88);
+  background: rgba(0, 0, 0, 0.92);
   display: none;
   align-items: center;
   justify-content: center;
   z-index: 9999;
   cursor: zoom-out;
-  padding: 2rem;
+  padding: 0.5rem;
 }
 .pf-lightbox.is-open { display: flex; }
 .pf-lightbox img {
-  max-width: 95vw;
-  max-height: 92vh;
+  max-width: 99vw;
+  max-height: 95vh;
+  width: auto;
+  height: auto;
+  object-fit: contain;
   border-radius: 4px;
   box-shadow: 0 8px 40px rgba(0, 0, 0, 0.5);
+  cursor: zoom-out;
 }
 .pf-lightbox-close {
   position: absolute;
@@ -386,6 +390,11 @@ author_profile: true
     <span class="pf-toc-num">02</span>
     <span class="pf-toc-title">배포맨</span>
     <span class="pf-toc-tag">CI/CD 통합 관리 · 2025.02</span>
+  </a>
+  <a class="pf-toc-item" href="#proj-mlops">
+    <span class="pf-toc-num">03</span>
+    <span class="pf-toc-title">MLOps 파이프라인</span>
+    <span class="pf-toc-tag">아키텍처 설계 · 2024.07</span>
   </a>
 </div>
 
@@ -687,7 +696,7 @@ author_profile: true
 </div>
 
 <script>
-(function() {
+document.addEventListener('DOMContentLoaded', function() {
   var box = document.getElementById('pf-lightbox');
   if (!box) return;
   var img = box.querySelector('img');
@@ -710,10 +719,141 @@ author_profile: true
     img.src = '';
   }
   box.addEventListener('click', function(e) {
-    if (e.target === box || e.target === close) closeBox();
+    if (e.target === box || e.target === close || e.target === img) closeBox();
   });
   document.addEventListener('keydown', function(e) {
     if (e.key === 'Escape' && box.classList.contains('is-open')) closeBox();
   });
-})();
+});
 </script>
+
+
+<!-- ═══════════════ 프로젝트 3 — MLOps ═══════════════ -->
+<section class="pf-project" id="proj-mlops">
+
+  <div class="pf-project-num">03</div>
+  <h2 class="pf-project-title">MLOps 2단계 아키텍처 설계 — 지하철 승객 예측 파이프라인</h2>
+  <div class="pf-project-meta">
+    <span>2024.07 ~ 2024.09</span><span>3개월</span><span>3인 팀</span>
+  </div>
+  <p class="pf-project-summary">
+    MLOps 2단계 파이프라인을 직접 설계·구축하며, 각 컴포넌트의 역할과 기술 선정 기준을
+    스스로 판단하는 경험을 목표로 진행한 프로젝트입니다.
+    데이터 수집부터 모델 갱신까지의 라이프사이클을 이벤트 기반 자동화로 연결했습니다.
+  </p>
+
+  <div class="pf-tags">
+    <span class="pf-tag">Kubernetes</span>
+    <span class="pf-tag">Airflow</span>
+    <span class="pf-tag">Kafka</span>
+    <span class="pf-tag">MLflow</span>
+    <span class="pf-tag">FastAPI</span>
+    <span class="pf-tag">Streamlit</span>
+    <span class="pf-tag">Elasticsearch</span>
+    <span class="pf-tag">Grafana</span>
+    <span class="pf-tag">RabbitMQ</span>
+    <span class="pf-tag">S3</span>
+    <span class="pf-tag">GitHub Actions</span>
+    <span class="pf-tag">Helm</span>
+  </div>
+
+  <div class="pf-section">
+    <div class="pf-section-title">Architecture</div>
+    <div class="pf-arch">
+      <img src="{{ base_path }}/images/mlops-architecture.png" alt="MLOps 2단계 파이프라인 아키텍처">
+    </div>
+  </div>
+
+  <div class="pf-section">
+    <div class="pf-section-title">기여한 부분</div>
+    <div class="pf-contrib">
+      <div class="pf-contrib-item">
+        <div class="pf-contrib-head">Performance Monitoring — Elasticsearch + Grafana</div>
+        <div class="pf-contrib-body">
+          사용자 피드백 데이터를 Elasticsearch에 적재하고 Grafana로 실시간 시각화했습니다.
+          NoSQL을 선택한 이유는 <strong>일관성·무결성보다 가용성과 성능이 더 중요</strong>한 데이터 성격이었고,
+          코멘트 분석 시 Full-text 검색을 활용할 수 있다는 점, Grafana와의 직관적인 연동까지 고려한 결정이었습니다.
+        </div>
+      </div>
+      <div class="pf-contrib-item">
+        <div class="pf-contrib-head">이벤트 기반 Trigger — Webhook → RabbitMQ → Airflow DAG</div>
+        <div class="pf-contrib-body">
+          사용자 만족도가 <strong>30% 이하로 떨어질 때</strong> Grafana Webhook이 RabbitMQ로 메시지를 전달하고,
+          Consumer가 이를 수신해 Airflow API로 재학습 DAG를 트리거하는 <strong>이벤트 기반 자동 재학습 구조</strong>를 설계했습니다.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="pf-section">
+    <div class="pf-section-title">트러블슈팅</div>
+
+    <!-- ─── 트러블슈팅 #1 ─── -->
+    <div class="pf-trouble">
+      <div class="pf-trouble-title">① Kafka 기반 수집 구조 → Crontab 배치로 전환</div>
+      <div class="pf-trouble-headline">데이터 성격을 다시 보고 오버엔지니어링을 자발적으로 제거</div>
+
+      <div class="pf-trouble-row">
+        <span class="pf-trouble-label">시도</span>
+        <span class="pf-trouble-text">초기에는 데이터 수집 단계에 Kafka를 두고 실시간 스트림처럼 처리하는 구조로 설계했음. MLOps의 일반적인 레퍼런스 구조를 따른 선택.</span>
+      </div>
+      <div class="pf-trouble-row">
+        <span class="pf-trouble-label">발견</span>
+        <span class="pf-trouble-text">공공 API는 <strong>일 단위 배치</strong>로 데이터가 갱신되는 성격이라 실시간 스트림이 의미를 가질 만한 데이터 흐름이 아니었음. Kafka 운영 부담(브로커·토픽·offset 관리)에 비해 얻는 이득이 거의 없는 <strong>오버엔지니어링</strong>이라는 판단.</span>
+      </div>
+      <div class="pf-trouble-row">
+        <span class="pf-trouble-label">결정</span>
+        <span class="pf-trouble-text"><strong>Crontab 기반 일 단위 배치</strong>로 수집 구조를 전환. 불필요한 인프라 리소스 소비를 제거하고 시스템 복잡도를 낮춰, 파이프라인 운영 안정성을 확보.</span>
+      </div>
+
+      <details class="pf-reflect">
+        <summary>회고 보기</summary>
+        <div class="pf-reflect-body">
+          <p><strong>"표준 아키텍처"가 곧 "우리 아키텍처"는 아니다.</strong></p>
+          <p>MLOps 레퍼런스 문서를 보면 데이터 수집 단계에 Kafka가 자주 등장한다. 그래서 우리도 자연스럽게 Kafka를 넣었다. 그런데 잘 생각해보면, Kafka의 강점은 <strong>대량의 실시간 이벤트를 버퍼링하고 여러 Consumer가 병렬로 소비</strong>하는 시나리오에서 발휘된다. 우리 데이터는 하루에 한 번 공공 API에서 가져오는 정적 배치 데이터였다. <strong>도구의 강점과 데이터의 성격이 일치하지 않았다.</strong></p>
+          <p><strong>"빼는 결정"이 "넣는 결정"보다 어려웠다.</strong></p>
+          <p>Kafka를 빼겠다고 했을 때 잠깐 망설였다. "이미 구축했는데 굳이?", "MLOps 프로젝트인데 Kafka 정도는 들어가야 하지 않나?" 같은 생각이 있었다. 결국 <strong>아키텍처는 보여주기 위한 게 아니라 데이터를 안정적으로 흘리기 위한 것</strong>이라는 기준으로 돌아왔고, Crontab으로 전환했다. 시스템은 더 단순해졌고, 운영 부담은 사라졌다.</p>
+          <p><strong>다음에 적용할 기준.</strong></p>
+          <p>도구를 도입할 때 "이 도구의 강점이 우리 데이터의 성격과 일치하는가"를 먼저 묻는 습관이 생겼다. 표준 아키텍처는 출발점일 뿐, 정답이 아니다.</p>
+        </div>
+      </details>
+    </div>
+
+    <!-- ─── 트러블슈팅 #2 ─── -->
+    <div class="pf-trouble">
+      <div class="pf-trouble-title">② RabbitMQ 한계 인식 + Redis Stream 개선 방향</div>
+      <div class="pf-trouble-headline">선택한 도구의 한계를 정확히 인식하고 다음 진화 경로를 설계</div>
+
+      <div class="pf-trouble-row">
+        <span class="pf-trouble-label">선택</span>
+        <span class="pf-trouble-text">이벤트 기반 트리거 구조에서 메시지 브로커로 <strong>RabbitMQ</strong>를 선택. 실시간 Alert 기반 비동기 트리거 구현에 적합하고, AMQP 표준으로 안정성이 검증되어 있다는 점이 근거.</span>
+      </div>
+      <div class="pf-trouble-row">
+        <span class="pf-trouble-label">한계</span>
+        <span class="pf-trouble-text">RabbitMQ는 <strong>메시지 소비 후 소멸</strong>하는 구조라, Consumer 장애 발생 시 트리거 메시지가 유실될 가능성이 존재. 재학습 트리거 같은 중요 이벤트는 한 번 놓치면 추적이 어려움.</span>
+      </div>
+      <div class="pf-trouble-row">
+        <span class="pf-trouble-label">개선</span>
+        <span class="pf-trouble-text"><strong>영속성이 있는 Redis Stream</strong>으로 전환하면, Consumer가 다운돼도 메시지가 스트림에 남아 복구 후 재처리 가능. 다음 사이클에서 적용할 개선 방향으로 정리.</span>
+      </div>
+
+      <details class="pf-reflect">
+        <summary>회고 보기</summary>
+        <div class="pf-reflect-body">
+          <p><strong>도구를 고른 뒤에 그 도구의 한계까지 보는 습관을 얻었다.</strong></p>
+          <p>RabbitMQ를 골랐을 때는 "비동기 트리거에 적합하다"는 장점만 봤다. 하지만 운영 중에 한 가지 시나리오가 떠올랐다 — <strong>Consumer Pod가 죽은 사이에 도착한 메시지는 어떻게 되는가?</strong> RabbitMQ는 기본적으로 메시지를 한 번 소비하면 소멸시키기 때문에, 그 사이에 떨어진 재학습 트리거는 영영 추적할 수 없다.</p>
+          <p><strong>대안을 미리 설계해두는 것의 가치.</strong></p>
+          <p>당장 운영에 문제가 생긴 건 아니지만, "지금은 괜찮아도 트래픽이 늘거나 Consumer 장애가 잦아지면 분명히 문제가 된다"는 점이 보였다. 그래서 Redis Stream으로 전환하는 경로를 미리 설계해뒀다. 영속성이 있고 Consumer Group으로 멀티 Consumer를 지원하며, 메시지 ID 기반으로 재처리가 가능하기 때문이다.</p>
+          <p><strong>아키텍처를 본다는 것은 "왜 그 자리에 그것이 있는가"를 보는 것.</strong></p>
+          <p>이 프로젝트를 통해 MLOps 아키텍처가 유기적으로 연결되는 구조를 직접 구축하며, 각 기술이 왜 그 자리에 배치되어야 하고 어떤 인프라 구조가 필요한지를 파악할 수 있었습니다. 데이터의 생성부터 모델 갱신까지의 라이프사이클을 이해하고, 향후 복잡한 시스템 설계 시 전체 흐름을 파악하는 능력을 키울 수 있었습니다.</p>
+        </div>
+      </details>
+    </div>
+
+  </div>
+
+  <div class="pf-links">
+    <a class="pf-link" href="#">GitHub</a>
+  </div>
+
+</section>

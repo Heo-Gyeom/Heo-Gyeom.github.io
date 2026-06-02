@@ -184,7 +184,43 @@ author_profile: true
   border-radius: 6px;
   border: 1px solid #eee;
   display: block;
+  cursor: zoom-in;
+  transition: transform 0.15s;
 }
+.pf-screen img:hover { transform: scale(1.01); }
+
+/* 라이트박스 오버레이 */
+.pf-lightbox {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.88);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  cursor: zoom-out;
+  padding: 2rem;
+}
+.pf-lightbox.is-open { display: flex; }
+.pf-lightbox img {
+  max-width: 95vw;
+  max-height: 92vh;
+  border-radius: 4px;
+  box-shadow: 0 8px 40px rgba(0, 0, 0, 0.5);
+}
+.pf-lightbox-close {
+  position: absolute;
+  top: 1rem;
+  right: 1.5rem;
+  background: transparent;
+  border: none;
+  color: #fff;
+  font-size: 2rem;
+  cursor: pointer;
+  line-height: 1;
+  opacity: 0.8;
+}
+.pf-lightbox-close:hover { opacity: 1; }
 .pf-screen-caption {
   font-size: 0.78rem;
   color: #888;
@@ -642,3 +678,42 @@ author_profile: true
   </div>
 
 </section>
+
+
+<!-- ─── 이미지 라이트박스 ─── -->
+<div class="pf-lightbox" id="pf-lightbox" role="dialog" aria-hidden="true">
+  <button class="pf-lightbox-close" aria-label="닫기">&times;</button>
+  <img src="" alt="">
+</div>
+
+<script>
+(function() {
+  var box = document.getElementById('pf-lightbox');
+  if (!box) return;
+  var img = box.querySelector('img');
+  var close = box.querySelector('.pf-lightbox-close');
+
+  document.querySelectorAll('.pf-screen img, .pf-arch img').forEach(function(el) {
+    el.addEventListener('click', function() {
+      img.src = el.src;
+      img.alt = el.alt;
+      box.classList.add('is-open');
+      box.setAttribute('aria-hidden', 'false');
+      document.body.style.overflow = 'hidden';
+    });
+  });
+
+  function closeBox() {
+    box.classList.remove('is-open');
+    box.setAttribute('aria-hidden', 'true');
+    document.body.style.overflow = '';
+    img.src = '';
+  }
+  box.addEventListener('click', function(e) {
+    if (e.target === box || e.target === close) closeBox();
+  });
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape' && box.classList.contains('is-open')) closeBox();
+  });
+})();
+</script>

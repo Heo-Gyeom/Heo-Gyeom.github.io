@@ -1,6 +1,5 @@
 ---
 permalink: /
-title: "허겸 | 포트폴리오"
 author_profile: true
 redirect_from:
   - /about/

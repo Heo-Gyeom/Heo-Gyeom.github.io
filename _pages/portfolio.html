@@ -359,6 +359,29 @@ author_profile: true
 
 /* placeholder 톤 다운 */
 .pf-todo { color: #bbb; font-style: italic; }
+
+/* ───────── 사이드바 오버라이드 ───────── */
+/* 사진 상단 짤림 방지 */
+.author__avatar img {
+  object-fit: cover;
+  object-position: top center !important;
+}
+
+/* 사이드바 스크롤 고정 해제 */
+.sidebar.sticky {
+  position: static !important;
+  top: auto !important;
+  overflow: visible !important;
+}
+
+/* 연락처 링크 간격·크기 */
+.author__urls-wrapper .author__urls li {
+  margin-bottom: 0.7rem !important;
+  font-size: 1rem !important;
+}
+.author__urls-wrapper .author__urls a {
+  font-size: 1rem !important;
+}
 </style>
 
 

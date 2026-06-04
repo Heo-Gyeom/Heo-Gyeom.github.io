@@ -6,14 +6,6 @@ redirect_from:
   - /about.html
 ---
 
-## 자기소개
-
-> 안녕하세요, **허겸**입니다.
->
-> 여기에 간단한 자기소개를 작성해주세요. 본인의 관심 분야, 목표, 강점 등을 담아보세요.
-
----
-
 ## 학력
 
 | 기간 | 학교명 | 전공 | 학위 |
@@ -75,7 +67,6 @@ redirect_from:
 
 **Airflow**
 -  EC2 환경에 Airflow 구축, Python Operator 사용한 Sensor·Connection·Hook 기반 DAG 작성 및 Slack 알림 구성
--  일일 배치 수집 → S3 저장 구현, 이후 규모 검토 후 Crontab으로 경량화
 
 ---
 
@@ -84,7 +75,3 @@ redirect_from:
 **Grafana / Prometheus**
 - MLOps 프로젝트에서 Elasticsearch 연동으로 사용자 만족도 실시간 모니터링 및 불만족 30% 초과 시 모델 재학습 트리거 구성
 - EKS 환경의 Karpenter 스케일링 지표 대시보드 시각화 및 CloudWatch 연동으로 AWS 리소스·RDS Aurora 통합 모니터링
-
-**ELK**
-- 빌드 시 발생하는 ERROR · WARN · FATAL 로그를 Elasticsearch · Kibana로 시각화
-- 배포 위험도 측정 지표 활용 검토 (프로젝트 방향과 맞지 않아 미적용)

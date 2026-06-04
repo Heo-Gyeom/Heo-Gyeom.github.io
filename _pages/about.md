@@ -1,12 +1,11 @@
 ---
 permalink: /
+title: "안녕하세요, 포기하지 않는 엔지니어 허겸입니다."
 author_profile: true
 redirect_from:
   - /about/
   - /about.html
 ---
-
-## 안녕하세요, 포기하지 않는 엔지니어 **허겸**입니다.
 
 DB부터 인프라까지, 다양한 계층에서 가설을 세우고 원인을 추적하는 엔지니어로 성장하고 있습니다.
 

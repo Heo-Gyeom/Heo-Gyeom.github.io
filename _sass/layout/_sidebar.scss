@@ -18,10 +18,10 @@
   }
 
   @media screen and (min-width: $sidebar-screen-min-width) {
-    height: 100vh;
-    overflow-y: auto;               // Add scrollbar if the sidebar is too long
-    position: fixed;
-    padding-top: $masthead-height;
+    height: auto;
+    overflow-y: visible;
+    position: relative;
+    padding-top: 0;
   }
 
   @include breakpoint($large) {
@@ -154,9 +154,10 @@
   }
 
   img {
-    width: 175px;
-    height: 175px;
+    width: 210px;
+    height: 210px;
     object-fit: cover;
+    object-position: top center;
     border-radius: 50%;
 
     @include breakpoint($large) {
@@ -307,17 +308,17 @@
 
   li {
     white-space: nowrap;
-    margin-bottom: 6px;
+    margin-bottom: 12px;
   }
 
   a {
     display: block;
     margin-bottom: 0;
     padding-right: 5px;
-    padding-top: 5px;
-    padding-bottom: 5px;
+    padding-top: 6px;
+    padding-bottom: 6px;
     color: inherit;
-    font-size: $type-size-5;
+    font-size: $type-size-4;
     text-decoration: none;
 
     &:hover {

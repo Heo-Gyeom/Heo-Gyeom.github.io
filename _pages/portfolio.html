@@ -301,29 +301,20 @@ author_profile: true
   font-size: 0.82rem;
 }
 
-/* 회고 드롭다운 */
+/* 회고 */
 .pf-reflect {
   margin-top: 1rem;
   border-top: 1px dashed #ddd;
   padding-top: 0.7rem;
 }
-.pf-reflect summary {
-  cursor: pointer;
-  font-size: 0.82rem;
-  color: #777;
-  font-weight: 600;
-  padding: 0.3rem 0;
-  list-style: none;
-  outline: none;
-}
-.pf-reflect summary::-webkit-details-marker { display: none; }
-.pf-reflect summary::before {
-  content: "▸ ";
+.pf-reflect-label {
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
   color: #aaa;
-  display: inline-block;
-  width: 14px;
+  margin-bottom: 0.4rem;
 }
-.pf-reflect[open] summary::before { content: "▾ "; }
 .pf-reflect-body {
   font-size: 0.85rem;
   color: #555;
@@ -385,17 +376,14 @@ author_profile: true
   <a class="pf-toc-item" href="#proj-once">
     <span class="pf-toc-num">01</span>
     <span class="pf-toc-title">GlobalNews AI</span>
-    <span class="pf-toc-tag">멀티리전 DR · 2025.04</span>
   </a>
   <a class="pf-toc-item" href="#proj-baepooman">
     <span class="pf-toc-num">02</span>
     <span class="pf-toc-title">배포맨</span>
-    <span class="pf-toc-tag">CI/CD 통합 관리 · 2025.02</span>
   </a>
   <a class="pf-toc-item" href="#proj-mlops">
     <span class="pf-toc-num">03</span>
     <span class="pf-toc-title">MLOps 파이프라인</span>
-    <span class="pf-toc-tag">아키텍처 설계 · 2024.07</span>
   </a>
 </div>
 
@@ -406,11 +394,12 @@ author_profile: true
   <div class="pf-project-num">01</div>
   <h2 class="pf-project-title">GlobalNews AI — 멀티리전 DR 자동화 플랫폼</h2>
   <div class="pf-project-meta">
-    <span>2025.04</span><span>5주</span><span>6인 팀 · 팀장</span>
+    <span>2025.04</span><span>5주</span><span>4인 팀 · 팀장</span>
   </div>
   <p class="pf-project-summary">
     서울 리전 장애 시 도쿄로 자동 전환되는 멀티리전 DR 시스템을 구현하고,
-    Failover RTO · RPO · 데이터 정합성을 수치로 검증했습니다.
+    Failover 전환 흐름과 트래픽 폭증 상황에서의 Aurora 복제 지연 · 데이터 정합성을
+    시나리오 기반으로 수치 검증했습니다.
   </p>
 
   <div class="pf-metrics">
@@ -467,8 +456,9 @@ author_profile: true
       <div class="pf-contrib-item">
         <div class="pf-contrib-head">데이터 정합성 검증</div>
         <div class="pf-contrib-body">
-          8개 Phase 부하 테스트를 설계·실행해 모든 부하 조건에서 Aurora 복제 지연 <strong>평균 100ms 미만</strong>을 실측했고,
-          서울/도쿄 데이터 건수 비교로 <strong>유실 0건</strong>을 확인했습니다.
+          사용자 트래픽이 집중되는 상황에 Aurora 복제 지연이 서비스 SLO 안에 유지되는지를
+          검증했습니다. 부하가 집중되면 커넥션 풀 포화로 인해 서울→도쿄 복제 지연이 늘어나고
+          데이터 유실이 발생할 수 있다는 가설 아래, 부하 테스트를 설계·실행했습니다.
         </div>
       </div>
     </div>
@@ -494,52 +484,52 @@ author_profile: true
         <span class="pf-trouble-text"><strong>연결을 재사용하지 않고 매 요청마다 새로 맺어 사용 후 즉시 종료</strong>하도록 변경했습니다. 더해 일시적인 네트워크 오류는 <strong>최대 2회 자동 재시도</strong>하도록 안전장치를 추가했습니다.</span>
       </div>
 
-      <details class="pf-reflect">
-        <summary>회고 보기</summary>
+      <div class="pf-reflect">
+        <div class="pf-reflect-label">회고</div>
         <div class="pf-reflect-body">
           <p>이번 문제의 핵심은 <strong>"코드 버그"보다 인프라 동작을 모르는 상태에서 연결 재사용을 설계한 것</strong>이었습니다.</p>
           <p>처음에는 커넥션 풀에서 일정 시간 지난 연결만 미리 정리하는 A안을 <em>"서버에서 끊는 타이밍과 겹치면 의미 없다"</em>는 추측만으로 기각했는데, 나중에야 NAT Gateway·Bedrock의 idle timeout이 수십~수백 초 수준이라는 걸 알게 됐습니다. 즉, <strong>A안이 나빴던 게 아니라 서버 타임아웃을 계측하지 않고 판단한 의사결정 과정이 문제</strong>였습니다.</p>
-          <p>또한 매 요청마다 새 연결을 맺는 현재 방식은 단기적으로는 안전하지만, <strong>TLS 비용과 포트 소모 측면에서 트래픽이 늘면 새로운 병목</strong>이 될 수 있습니다.</p>
-          <p>다음부터는 <strong>(1)</strong> 먼저 시간·에러율 같은 수치를 모으고, <strong>(2)</strong> 풀 유지 + 선제 제거 + 재시도 + 공식 SDK 조합처럼 <strong>안전성과 성능을 함께 보는 설계</strong>를 기본 원칙으로 삼으려 합니다.</p>
+          <p>또한 매 요청마다 새 연결을 맺는 현재 방식은 단기적으로는 안전하지만, <strong>동시 요청이 증가하면 애플리케이션/DB 커넥션 풀이 포화되며 응답 지연 또는 요청 실패가 발생할 수 있는 새로운 병목</strong>이 될 수 있습니다.</p>
+          <p>다음부터는 먼저 응답 시간과 에러율을 측정한 뒤, 그 수치를 근거로 설계를 결정하는 방식을 원칙으로 삼으려 합니다.</p>
         </div>
-      </details>
+      </div>
     </div>
 
     <!-- ─── 트러블슈팅 #2 ─── -->
     <div class="pf-trouble">
-      <div class="pf-trouble-title">② 멀티 리전 DR 환경에서의 RPO 검증 부하 테스트</div>
-      <div class="pf-trouble-headline">RPO &lt; 1초 SLO 충족 · 데이터 유실 0건 · Aurora Global DB (Seoul-Tokyo)</div>
+      <div class="pf-trouble-title">② 트래픽 집중 시 채팅 데이터 쓰기 안정성 검증 (Aurora Global DB 멀티 리전)</div>
+      <div class="pf-trouble-headline">쓰기 지연 1초 미만 · 데이터 유실 0건 · Aurora Global DB (Seoul-Tokyo)</div>
 
       <div class="pf-trouble-row">
         <span class="pf-trouble-label">문제</span>
-        <span class="pf-trouble-text">서울-도쿄 Aurora Global DB 이중화는 구성했지만, 실제 부하 상황에서 RPO &lt; 1초 SLO 충족 여부는 검증하지 않은 상태였습니다.</span>
+        <span class="pf-trouble-text">서울-도쿄 Aurora Global DB 이중화는 구성했지만, 사용자 트래픽이 집중될 때 채팅 데이터 쓰기가 지연되거나 유실될 수 있다는 우려가 있었고 실제 조건에서 확인한 적이 없었습니다.</span>
       </div>
       <div class="pf-trouble-row">
         <span class="pf-trouble-label">설계</span>
-        <span class="pf-trouble-text">처음에는 직접 DB에 부하를 주는 방식으로 시작했지만, 그 방식은 <strong>앱 레이어를 거치지 않아 실제 서비스 동작을 반영하지 못한다는 한계</strong>를 인식했습니다. 이를 보완해 <strong>API를 경유한 실제 트래픽 흐름으로 8개 Phase에 걸쳐 점진적 부하 검증</strong>을 진행했습니다.</span>
+        <span class="pf-trouble-text">처음에는 직접 DB에 부하를 주는 방식으로 시작했지만, <strong>앱 레이어를 거치지 않아 실제 서비스 동작을 반영하지 못한다는 한계</strong>를 인식했습니다. 이를 보완해 채팅 메시지 2,000건을 사전 저장한 뒤, <strong>20개 채팅방 URL을 API를 통해 순차 반복 호출하며 실제 트래픽 흐름 기준으로 쓰기 요청 처리 여부를 검증</strong>했습니다.</span>
       </div>
       <div class="pf-trouble-row">
         <span class="pf-trouble-label">결과</span>
-        <span class="pf-trouble-text"><strong>평균 복제 지연 약 50ms</strong>, 서울/도쿄 데이터 차이 <strong>0건</strong>, 처리 성공률 <strong>97.9%</strong>로 RPO·유실·스케일링 SLO 전 항목을 충족했습니다. Aurora 스토리지 레이어 복제는 앱 레이어와 독립적으로 동작함을 실측으로 확인했습니다.</span>
+        <span class="pf-trouble-text">평균 쓰기 지연 <strong>약 50ms</strong>, 저장 데이터 기준 유실 <strong>0건</strong>, 처리 성공률 <strong>97.9%</strong>였습니다. 나머지 2.1%는 트래픽 급증 구간에서 서버 확장이 따라오지 못해 발생한 503 응답으로, 데이터 유실이 아닌 요청 거절이었습니다.</span>
       </div>
 
-      <details class="pf-reflect">
-        <summary>회고 보기</summary>
+      <div class="pf-reflect">
+        <div class="pf-reflect-label">회고</div>
         <div class="pf-reflect-body">
           <span class="pf-reflect-h">[테스트 설계의 한계]</span>
-          <p>RPO를 1초 이내로 맞추겠다는 목표는 분명했지만, 그 목표를 검증하려면 어떤 상황을 어떻게 재현해야 하는지 정리하지 않은 채 테스트부터 진행했습니다.</p>
-          <p>여러 형태의 부하와 장애 상황을 한꺼번에 섞어 돌리다 보니, 내가 설계한 시나리오가 정말로 RPO 1초를 검증하기에 적절했는지, 거기서 얻은 수치를 그대로 신뢰해도 되는지에 대해 확신하기 어려웠습니다.</p>
-          <p>앞으로는 테스트를 설계할 때 먼저 <strong>"무엇을 검증하려는지, 어떤 지표를 어떤 방식으로 측정할지"</strong>를 명확히 정의하고, 그 목적에 맞는 테스트 방법을 사전에 정하는 것을 원칙으로 삼으려 합니다.</p>
+          <p>테스트를 진행하면서 어떤 상황을 재현하려는지, 어떤 지표로 판단할지를 미리 정리하지 않은 채 시작했습니다.</p>
+          <p>여러 형태의 부하를 한꺼번에 섞어 돌리다 보니, 나온 수치가 실제로 원하는 조건을 검증한 결과인지 확신하기 어려웠습니다.</p>
+          <p>앞으로는 테스트 전에 먼저 <strong>"무엇을 확인하려는지, 어떤 지표를 어떤 방식으로 측정할지"</strong>를 명확히 정의하는 것을 원칙으로 삼으려 합니다.</p>
 
           <span class="pf-reflect-h">[자동 확장 한계와 구조 개선 방향]</span>
-          <p>RPO 자체는 통과했지만, 트래픽이 짧은 시간에 급증할 때 Karpenter·HPA가 새 노드와 파드를 띄우는 데 약 3분이 걸리는 동안 기존 파드에 요청이 몰리면서 일부 요청이 503으로 거절되는 상황을 확인했습니다.</p>
+          <p>트래픽이 짧은 시간에 급증할 때 Karpenter·HPA가 새 노드와 파드를 띄우는 데 약 3분이 걸리는 동안 기존 파드에 요청이 몰리면서 일부 요청이 503으로 거절되는 상황을 확인했습니다.</p>
           <p>서버 확장 속도가 트래픽 유입 속도보다 느리다는 구조적 한계를 완화하기 위해, 앞으로는 <strong>요청을 AWS SQS에 먼저 적재하고 준비된 서버가 순차적으로 처리하는 비동기 구조</strong>로 바꾸는 방안을 검토 중입니다.</p>
         </div>
-      </details>
+      </div>
     </div>
-  <div class="pf-links">
-    <a class="pf-link" href="#">GitHub</a>
-  </div>
+    <div class="pf-links">
+      <a class="pf-link" href="#">GitHub</a>
+    </div>
 
 </section>
 
@@ -574,11 +564,11 @@ author_profile: true
     <div class="pf-screens">
       <div class="pf-screen">
         <img src="{{ base_path }}/images/baepooman-task-list.png" alt="배포맨 작업 관리 화면 — 다단계 필터링">
-        <div class="pf-screen-caption">작업 관리 — 다단계 필터링·정렬·검색</div>
+        <div class="pf-screen-caption">작업 상세 — 타임라인·승인·결과 보고 통합</div>
       </div>
       <div class="pf-screen">
         <img src="{{ base_path }}/images/baepooman-task-detail.png" alt="배포맨 작업 상세 화면 — 타임라인·승인·결과 보고 통합">
-        <div class="pf-screen-caption">작업 상세 — 타임라인·승인·결과 보고 통합</div>
+        <div class="pf-screen-caption">작업 관리 — 다단계 필터링·정렬·검색</div>
       </div>
     </div>
   </div>
@@ -596,7 +586,7 @@ author_profile: true
       <div class="pf-contrib-item">
         <div class="pf-contrib-head">작업 상세 — 프로세스 그룹화 및 통합 화면</div>
         <div class="pf-contrib-body">
-          같은 PR에 대한 재배포·롤백을 <strong>PLAN 단위로 그룹화</strong>해 배포 흐름을 시간순으로 추적할 수 있게 했습니다.
+          같은 PR에 대한 재배포·롤백을 <strong>계획서 단위로 그룹화</strong>해 배포 흐름을 시간순으로 추적할 수 있게 했습니다.
           타임라인, 승인 정보, Jenkins 빌드 로그를 한 화면에서 확인할 수 있도록 통합 구성했습니다.
         </div>
       </div>
@@ -609,7 +599,7 @@ author_profile: true
     <!-- ─── 트러블슈팅 #1 ─── -->
     <div class="pf-trouble">
       <div class="pf-trouble-title">① 배포 프로세스 상태 추적 일치화</div>
-      <div class="pf-trouble-headline">동일 PR의 재배포·롤백 흐름을 PLAN 단위로 그룹화</div>
+      <div class="pf-trouble-headline">동일 PR의 재배포·롤백 흐름을 계획서 단위로 그룹화</div>
 
       <div class="pf-trouble-row">
         <span class="pf-trouble-label">문제</span>
@@ -617,23 +607,23 @@ author_profile: true
       </div>
       <div class="pf-trouble-row">
         <span class="pf-trouble-label">원인</span>
-        <span class="pf-trouble-text">배포 단위가 PLAN 기준이 아니라 개별 이벤트(배포·취소·롤백) 기준으로만 적재되어, <strong>"어느 배포가 어느 프로세스에 속하는지"를 구분할 식별 체계가 없었습니다.</strong></span>
+        <span class="pf-trouble-text">배포 단위가 계획서 기준이 아니라 개별 이벤트(배포·취소·롤백) 기준으로만 적재되어, <strong>"어느 배포가 어느 프로세스에 속하는지"를 구분할 식별 체계가 없었습니다.</strong></span>
       </div>
       <div class="pf-trouble-row">
         <span class="pf-trouble-label">해결</span>
-        <span class="pf-trouble-text">현재 Deployment가 속한 <strong>PLAN을 프로세스 시작점</strong>, 동일 PR로 생성된 다음 PLAN(취소·롤백 포함)을 <strong>종료점</strong>으로 지정해 범위 내 모든 레코드를 조회했습니다. <code>createdAt + id</code> 복합 정렬로 동일 시각 배포 순서까지 안정적으로 보장했습니다.</span>
+        <span class="pf-trouble-text">현재 Deployment가 속한 <strong>계획서를 프로세스 시작점</strong>, 동일 PR로 생성된 다음 계획서(취소·롤백 포함)을 <strong>종료점</strong>으로 지정해 범위 내 모든 레코드를 조회했습니다. <code>createdAt + id</code> 정렬로 동일 시각 배포 순서까지 안정적으로 보장했습니다.</span>
       </div>
 
-      <details class="pf-reflect">
-        <summary>회고 보기</summary>
+      <div class="pf-reflect">
+        <div class="pf-reflect-label">회고</div>
         <div class="pf-reflect-body">
           <span class="pf-reflect-h">[설계 선택과 시간 제약]</span>
-          <p>이 이슈는 배포 이벤트마다 Process ID를 도입해 스키마·코드를 전면 수정하는 방식과, 기존 구조를 유지한 채 PLAN을 시작점/다음 PLAN을 종료점으로 보는 쿼리 방식 두 가지 중에서, <strong>마감 일정 때문에 후자를 택한 선택의 결과</strong>였습니다. 설계–수정–구현을 여러 번 반복하면서 초기 기획과 실제 구현 사이의 간극을 크게 겪었고, 이후로는 <strong>요구사항과 배포 단위를 먼저 명확히 정의한 뒤 설계를 시작해야 한다</strong>는 점을 체감했습니다.</p>
+          <p>이 이슈는 배포 이벤트마다 Process ID를 도입해 스키마·코드를 전면 수정하는 방식과, 기존 구조를 유지한 채 계획서를 시작점/다음 계획서를 종료점으로 보는 쿼리 방식 두 가지 중에서, <strong>마감 일정 때문에 후자를 택한 선택의 결과</strong>였습니다. 설계–수정–구현을 여러 번 반복하면서 초기 기획과 실제 구현 사이의 간극을 크게 겪었고, 이후로는 <strong>요구사항과 배포 단위를 먼저 명확히 정의한 뒤 설계를 시작해야 한다</strong>는 점을 체감했습니다.</p>
 
           <span class="pf-reflect-h">[채택한 방식의 한계와 다음 단계]</span>
-          <p>PLAN 범위로 레코드를 조회하는 방식은 추가 개발 없이 동일 PR의 재배포·롤백 이력을 한 번에 모아 볼 수 있다는 장점이 있지만, 배포 상세 화면을 열 때마다 해당 범위를 매번 다시 조회해야 하므로 장기적으로 이력 데이터가 쌓이면 DB 부하가 커질 수 있는 구조입니다. 다음 사이클에서는 <strong>Process ID 도입처럼 배포 단위를 스키마 차원에서 명시적으로 구분하거나, 조회 결과를 캐싱해 읽기 부하를 줄이는 방향</strong>으로 개선할 계획입니다.</p>
+          <p>계획서 범위로 레코드를 조회하는 방식은 추가 개발 없이 동일 PR의 재배포·롤백 이력을 한 번에 모아 볼 수 있다는 장점이 있지만, 배포 상세 화면을 열 때마다 해당 범위를 매번 다시 조회해야 하므로 장기적으로 이력 데이터가 쌓이면 DB 부하가 커질 수 있는 구조입니다. 다음 사이클에서는 <strong>Process ID 도입처럼 배포 단위를 스키마 차원에서 명시적으로 구분하거나, 조회 컬럼에 인덱스를 추가하여 읽기 부하를 줄이는 방향</strong>으로 개선할 계획입니다.</p>
         </div>
-      </details>
+      </div>
     </div>
 
     <!-- ─── 트러블슈팅 #2 ─── -->
@@ -654,14 +644,14 @@ author_profile: true
         <span class="pf-trouble-text">프로젝트 방향이 "배포 사전 위험도 예측"에서 <strong>"배포 이력 관리"로 전환</strong>되며 ELK는 범위를 벗어났습니다. 구축·운영 난이도를 다시 평가해 미채택을 결정했습니다.</span>
       </div>
 
-      <details class="pf-reflect">
-        <summary>회고 보기</summary>
+      <div class="pf-reflect">
+        <div class="pf-reflect-label">회고</div>
         <div class="pf-reflect-body">
           <span class="pf-reflect-h">[도구 도입 판단의 한계]</span>
           <p>돌이켜보면 ELK를 도입하기까지 고려해야 할 전제(데이터 누적량, 운영 부담, 프로젝트 방향성)가 많았는데, 이런 조건들을 충분히 검토하지 않고 <strong>"어떤 기술을 쓸지"에 초점을 맞춘 채 바로 구축부터 시작</strong>했습니다. 학습 프로젝트 특성상 로그 데이터가 충분히 쌓일 시간도 없고, ELK 스택을 운영·모니터링할 인력과 시간이 제한적인 상황에서, 결국 위험도 지표로 활용할 만큼의 의미 있는 패턴을 얻지 못했고 운영 비용만 커질 수 있는 구조였다는 점을 뒤늦게 깨달았습니다.</p>
           <p>앞으로는 새로운 도구를 도입할 때 <strong>"이 기술이 의미 있으려면 어떤 데이터 규모·운영 인력·프로젝트 목표가 전제되어야 하는가"</strong>를 먼저 정의하고, 그 전제가 현재 프로젝트 단계와 맞는지부터 확인한 뒤 선택하려고 합니다. 이번 경험을 통해 <strong>기술 자체보다 프로젝트의 목적과 시점에 맞는지부터 따져보는 습관</strong>이 필요하다는 것을 배웠습니다.</p>
         </div>
-      </details>
+      </div>
     </div>
 
   </div>
@@ -750,11 +740,10 @@ document.addEventListener('DOMContentLoaded', function() {
     <div class="pf-section-title">기여한 부분</div>
     <div class="pf-contrib">
       <div class="pf-contrib-item">
-        <div class="pf-contrib-head">Performance Monitoring — Elasticsearch + Grafana</div>
+        <div class="pf-contrib-head">사용자 만족도 모니터링 — Elasticsearch + Grafana</div>
         <div class="pf-contrib-body">
           사용자 피드백 데이터를 Elasticsearch에 적재하고 Grafana로 실시간 시각화했습니다.
-          NoSQL을 선택한 이유는 <strong>일관성·무결성보다 가용성과 성능이 더 중요</strong>한 데이터 성격이었고,
-          코멘트 분석 시 Full-text 검색을 활용할 수 있다는 점, Grafana와의 직관적인 연동까지 고려한 결정이었습니다.
+          NoSQL을 선택한 이유는 <strong>일관성·무결성보다 가용성과 성능이 더 중요</strong>한 데이터 성격이었고, Grafana와의 직관적인 연동을 고려하였습니다.
         </div>
       </div>
       <div class="pf-contrib-item">
@@ -788,13 +777,13 @@ document.addEventListener('DOMContentLoaded', function() {
         <span class="pf-trouble-text"><strong>Crontab 기반 일 단위 배치</strong>로 수집 구조를 전환했습니다. 불필요한 인프라 리소스 소비를 제거하고 시스템 복잡도를 낮춰, 파이프라인 운영 안정성을 확보했습니다.</span>
       </div>
 
-      <details class="pf-reflect">
-        <summary>회고 보기</summary>
+      <div class="pf-reflect">
+        <div class="pf-reflect-label">회고</div>
         <div class="pf-reflect-body">
           <span class="pf-reflect-h">[오버엔지니어링에서 단순함으로]</span>
           <p>처음에는 교육 과정에서 배운 아키텍처를 그대로 따르면서 Kafka를 쓰는 게 당연하다고 생각했지만, <strong>하루 한 번 갱신되는 배치 데이터라는 현실과 맞지 않는 오버엔지니어링</strong>이라는 점을 뒤늦게 인정하게 됐습니다. 이미 구축한 사항을 빼는 결정이 망설여졌지만, <strong>보여주기용 기술 스택이 아니라 현재 데이터 흐름에 맞는 단순한 구조가 더 중요</strong>하다고 판단해 Crontab 기반 일 단위 배치로 전환했습니다.</p>
         </div>
-      </details>
+      </div>
     </div>
 
     <!-- ─── 트러블슈팅 #2 ─── -->
@@ -815,8 +804,8 @@ document.addEventListener('DOMContentLoaded', function() {
         <span class="pf-trouble-text"><strong>영속성이 있는 Redis Stream으로 전환</strong>하면, Consumer가 다운돼도 메시지가 스트림에 남아 복구 후 재처리가 가능합니다. 다음 사이클에서 적용할 개선 방향으로 정리했습니다.</span>
       </div>
 
-      <details class="pf-reflect">
-        <summary>회고 보기</summary>
+      <div class="pf-reflect">
+        <div class="pf-reflect-label">회고</div>
         <div class="pf-reflect-body">
           <span class="pf-reflect-h">[선택 시점의 시야 한계]</span>
           <p>RabbitMQ를 고를 때는 <em>"실시간 비동기 트리거에 적합하다"</em>는 장점만 보고 시작했지만, 운영을 떠올려 보니 <strong>장애가 발생하면 메시지가 그대로 소실되어, 한 번 누락된 재학습 트리거는 복구가 불가능해진다</strong>는 한계를 뒤늦게 인식했습니다. 중요한 이벤트일수록 장애 시 재처리·추적 가능성이 더 중요하다는 점을 고려하면, 단순히 <strong>"비동기 처리에 잘 맞는다"만으로는 충분한 선택 기준이 아니라는 것</strong>을 배웠습니다.</p>
@@ -824,7 +813,7 @@ document.addEventListener('DOMContentLoaded', function() {
           <span class="pf-reflect-h">[대안 설계와 평가 원칙의 전환]</span>
           <p>이 한계를 보완하기 위해 다음 사이클에서는 <strong>메시지가 스트림에 영속되고 장애 후에도 재처리가 가능한 Redis Stream을 대안 경로로 설계</strong>해 두었습니다. 앞으로는 메시지 브로커를 포함해 어떤 도구를 선택하든 <strong>"정상 동작 시 장점"뿐 아니라 "장애·스케일 변화 시 어떤 식으로 망가지는지"까지 같이 보는 것</strong>을 아키텍처 설계의 기본 습관으로 삼으려 합니다.</p>
         </div>
-      </details>
+      </div>
     </div>
 
   </div>

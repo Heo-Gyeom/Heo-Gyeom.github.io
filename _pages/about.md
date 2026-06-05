@@ -47,30 +47,30 @@ redirect_from:
 
 ## 기술 스택
 
-### ☁ Cloud / Infrastructure
+### Cloud / Infrastructure
 
-**AWS**
+#### AWS
 - EKS 클러스터 기반 컨테이너 오케스트레이션 환경 구성 및 Karpenter 파드·노드 오토스케일링 적용
 - Aurora Global DB 멀티리전 구성, 트래픽 집중 시 쓰기 지연·데이터 유실 검증
 
-**Terraform**
+#### Terraform
 - AWS 인프라 구성 구조 이해 및 리소스 배포 흐름·상태 관리 학습
 
-**CI/CD**
+#### CI/CD
 - Route 53 · CloudFront · S3로 프론트엔드 정적 배포 구성
 - GitHub Actions를 통해 프론트는 S3, 백엔드는 ECR로 빌드·배포 파이프라인 분리
 
-### ⚙ Data Pipeline
+### Data Pipeline
 
-**Kafka**
+#### Kafka
 - 토픽·파티션·리플리케이션 개념 학습 후 3-노드 클러스터로 구성해 장애 시 고가용성 동작 확인
 - 토픽 단위로 데이터 형식을 분리해 중앙 허브 기능 구현, 컨슈머 그룹별 독립 구조 설계
 
-**Airflow**
+#### Airflow
 - EC2에 Airflow 구축, PythonOperator 기반으로 Sensor·Connection·Hook을 활용한 DAG 작성 및 Slack 알림 연동
 
-### 📊 Monitoring
+### Monitoring
 
-**Grafana / Prometheus**
+#### Grafana / Prometheus
 - MLOps 프로젝트에서 Elasticsearch 연동으로 사용자 만족도 실시간 모니터링 및 불만족 30% 초과 시 모델 재학습 트리거 구성
 - EKS 환경의 Karpenter 스케일링 지표 대시보드 시각화 및 CloudWatch 연동으로 AWS 리소스·RDS Aurora 통합 모니터링

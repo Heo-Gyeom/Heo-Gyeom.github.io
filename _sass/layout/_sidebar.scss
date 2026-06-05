@@ -20,8 +20,16 @@
   @media screen and (min-width: $sidebar-screen-min-width) {
     height: auto;
     overflow-y: visible;
-    position: relative;
+    position: relative !important;
+    top: auto !important;
     padding-top: 0;
+  }
+
+  &.sticky {
+    position: relative !important;
+    top: auto !important;
+    height: auto !important;
+    overflow-y: visible !important;
   }
 
   @include breakpoint($large) {
@@ -151,6 +159,7 @@
     display: block;
     width: auto;
     height: auto;
+    margin-bottom: 1.4rem;
   }
 
   img {
@@ -308,17 +317,18 @@
 
   li {
     white-space: nowrap;
-    margin-bottom: 12px;
+    margin-bottom: 16px;
+    font-size: 1.1rem;
   }
 
   a {
     display: block;
     margin-bottom: 0;
     padding-right: 5px;
-    padding-top: 6px;
-    padding-bottom: 6px;
+    padding-top: 4px;
+    padding-bottom: 4px;
     color: inherit;
-    font-size: $type-size-5;
+    font-size: 1.1rem;
     text-decoration: none;
 
     &:hover {

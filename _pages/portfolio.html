@@ -486,7 +486,7 @@ author_profile: true
 
       <div class="pf-contrib-item">
         <div class="pf-contrib-head">DR 시나리오 설계</div>
-        <div class="pf-contrib-img-placeholder">이미지 추가 예정 (once-dr-architecture.png)</div>
+        <img class="pf-contrib-img" src="{{ base_path }}/images/once-dr-architecture.png" alt="DR 시나리오 아키텍처">
         <div class="pf-contrib-body">
           서울 ALB 장애 주입 → CloudFront Origin Failover 자동 전환 → Lambda 트리거로 도쿄 Pod 기동 → Aurora Planned Failover까지의
           전체 전환 흐름을, <strong>장애 발생 시 자동으로 동작</strong>하도록 설계하였습니다.
@@ -495,7 +495,7 @@ author_profile: true
 
       <div class="pf-contrib-item">
         <div class="pf-contrib-head">CI/CD 파이프라인 설계</div>
-        <div class="pf-contrib-img-placeholder">이미지 추가 예정 (once-cicd-architecture.png)</div>
+        <img class="pf-contrib-img" src="{{ base_path }}/images/once-cicd-architecture.png" alt="CI/CD 파이프라인 아키텍처">
         <div class="pf-contrib-body">
           <p><strong>백엔드</strong> 코드 push → Docker 이미지 빌드 → ECR push → manifest 레포 태그 자동 업데이트</p>
           <p><strong>프론트엔드</strong> pnpm 빌드 → S3 sync → CloudFront 캐시 무효화</p>

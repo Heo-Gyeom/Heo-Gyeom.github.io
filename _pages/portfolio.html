@@ -232,19 +232,38 @@ author_profile: true
 .pf-contrib {
   display: flex;
   flex-direction: column;
-  gap: 0.8rem;
+  gap: 1.6rem;
 }
 .pf-contrib-item {
-  padding: 0.7rem 0.9rem;
+  padding: 0.9rem 1rem;
   background: #fbfbfb;
   border-left: 2px solid #d0d0d0;
   border-radius: 0 4px 4px 0;
 }
 .pf-contrib-head {
   font-weight: 600;
-  font-size: 0.92rem;
+  font-size: 0.95rem;
   color: #222;
-  margin-bottom: 0.25rem;
+  margin-bottom: 0.6rem;
+}
+.pf-contrib-img {
+  width: 100%;
+  border-radius: 6px;
+  margin: 0.6rem 0;
+  border: 1px solid #e8e8e8;
+}
+.pf-contrib-img-placeholder {
+  width: 100%;
+  height: 180px;
+  background: #f0f0f0;
+  border: 1px dashed #ccc;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #aaa;
+  font-size: 0.82rem;
+  margin: 0.6rem 0;
 }
 .pf-contrib-body {
   font-size: 0.88rem;
@@ -464,20 +483,25 @@ author_profile: true
   <div class="pf-section">
     <div class="pf-section-title">기여한 부분</div>
     <div class="pf-contrib">
-      <div class="pf-contrib-item">
-        <div class="pf-contrib-head">CI/CD 파이프라인 설계</div>
-        <div class="pf-contrib-body">
-          코드 push → Docker 이미지 빌드 → ECR push → manifest 레포 태그 자동 업데이트로 이어지는 백엔드 CI 파이프라인을 구성했습니다.
-          프론트엔드는 pnpm 빌드 → S3 sync → CloudFront 캐시 무효화까지 한 번에 자동화했습니다.
-        </div>
-      </div>
+
       <div class="pf-contrib-item">
         <div class="pf-contrib-head">DR 시나리오 설계</div>
+        <div class="pf-contrib-img-placeholder">이미지 추가 예정 (once-dr-architecture.png)</div>
         <div class="pf-contrib-body">
           서울 ALB 장애 주입 → CloudFront Origin Failover 자동 전환 → Lambda 트리거로 도쿄 Pod 기동 → Aurora Planned Failover까지의
           전체 전환 흐름을, <strong>장애 발생 시 자동으로 동작</strong>하도록 설계하였습니다.
         </div>
       </div>
+
+      <div class="pf-contrib-item">
+        <div class="pf-contrib-head">CI/CD 파이프라인 설계</div>
+        <div class="pf-contrib-img-placeholder">이미지 추가 예정 (once-cicd-architecture.png)</div>
+        <div class="pf-contrib-body">
+          코드 push → Docker 이미지 빌드 → ECR push → manifest 레포 태그 자동 업데이트로 이어지는 백엔드 CI 파이프라인을 구성했습니다.
+          프론트엔드는 pnpm 빌드 → S3 sync → CloudFront 캐시 무효화까지 한 번에 자동화했습니다.
+        </div>
+      </div>
+
       <div class="pf-contrib-item">
         <div class="pf-contrib-head">데이터 정합성 검증</div>
         <div class="pf-contrib-body">
@@ -486,6 +510,7 @@ author_profile: true
           데이터 유실이 발생할 수 있다는 가설 아래, 부하 테스트를 설계·실행했습니다.
         </div>
       </div>
+
     </div>
   </div>
 

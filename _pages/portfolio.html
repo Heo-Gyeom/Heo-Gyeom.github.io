@@ -392,6 +392,17 @@ author_profile: true
 /* placeholder 톤 다운 */
 .pf-todo { color: #bbb; font-style: italic; }
 
+/* 트러블슈팅 내 설명 이미지 */
+.pf-trouble-img {
+  margin: 0.8rem 0;
+}
+.pf-trouble-img img {
+  width: 100%;
+  border-radius: 6px;
+  border: 1px solid #eee;
+  cursor: zoom-in;
+}
+
 /* ───────── 사이드바 오버라이드 ───────── */
 /* 사진 상단 짤림 방지 */
 .author__avatar img {
@@ -660,7 +671,7 @@ author_profile: true
 
       <div class="pf-trouble-row">
         <span class="pf-trouble-label">문제</span>
-        <span class="pf-trouble-text">기존 프로세스(계획서 → 배포 → 결과보고/취소/롤백)에서 <strong>동일 PR로 재배포·롤백 시 여러 기록이 중복 적재</strong>되어, 담당자가 현재 배포 상태를 한눈에 파악하기 어렵고 이력 추적에 시간이 오래 걸리며 휴먼 에러가 발생할 가능성이 있었습니다.</span>
+        <span class="pf-trouble-text">같은 PR에 대해 배포·취소·롤백·재배포가 반복될 때, <strong>각 이벤트가 어느 배포 프로세스에 속하는지 구분할 식별 체계가 없어</strong> 담당자가 현재 배포 상태를 한눈에 파악하기 어렵고 이력 추적에 시간이 오래 걸렸습니다.</span>
       </div>
       <div class="pf-trouble-row">
         <span class="pf-trouble-label">원인</span>
@@ -669,6 +680,10 @@ author_profile: true
       <div class="pf-trouble-row">
         <span class="pf-trouble-label">해결</span>
         <span class="pf-trouble-text">현재 Deployment가 속한 <strong>계획서를 프로세스 시작점</strong>, 동일 PR로 생성된 다음 계획서(취소·롤백 포함)을 <strong>종료점</strong>으로 지정해 범위 내 모든 레코드를 조회했습니다. <code>createdAt + id</code> 정렬로 동일 시각 배포 순서까지 안정적으로 보장했습니다.</span>
+      </div>
+
+      <div class="pf-trouble-img">
+        <img src="{{ base_path }}/images/be4man.png" alt="배포 프로세스 그룹화 Before/After">
       </div>
 
       <div class="pf-reflect">
@@ -733,7 +748,7 @@ document.addEventListener('DOMContentLoaded', function() {
   var img = box.querySelector('img');
   var close = box.querySelector('.pf-lightbox-close');
 
-  document.querySelectorAll('.pf-screen img, .pf-arch img, .pf-contrib-img').forEach(function(el) {
+  document.querySelectorAll('.pf-screen img, .pf-arch img, .pf-contrib-img, .pf-trouble-img img').forEach(function(el) {
     el.addEventListener('click', function() {
       img.src = el.src;
       img.alt = el.alt;

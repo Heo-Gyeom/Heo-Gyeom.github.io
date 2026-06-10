@@ -704,34 +704,6 @@ author_profile: true
       </div>
     </div>
 
-    <!-- ─── 트러블슈팅 #2 ─── -->
-    <div class="pf-trouble">
-      <div class="pf-trouble-title">② ELK 기반 배포 위험도 측정 — 도입 검토 후 미채택</div>
-      <div class="pf-trouble-headline">빌드 로그 시각화 PoC → 트레이드오프 검토 → 자발적 폐기 결정</div>
-
-      <div class="pf-trouble-row">
-        <span class="pf-trouble-label">시도</span>
-        <span class="pf-trouble-text">관리자 입장에서 <strong>배포 위험도를 정량적으로 측정해 상/중/하로 보여주자</strong>는 의견에서 시작했습니다. MSA 환경을 가정해 각 프로젝트의 빌드 시 발생하는 로그(WARN/ERROR/FATAL)를 Elasticsearch에 적재하고 Kibana에서 프로젝트별·시간대별로 시각화해, <strong>위험도 측정의 보조 지표로 활용</strong>하려 했습니다.</span>
-      </div>
-      <div class="pf-trouble-row">
-        <span class="pf-trouble-label">한계</span>
-        <span class="pf-trouble-text">위험도 기준의 보조 지표로 쓰려 했지만 (1) <strong>데이터가 아직 쌓이지 않은 상태</strong>라 의미 있는 패턴을 잡을 수 없었고, (2) 학습 프로젝트 규모 대비 <strong>ELK 운영 부담이 과했습니다.</strong></span>
-      </div>
-      <div class="pf-trouble-row">
-        <span class="pf-trouble-label">결정</span>
-        <span class="pf-trouble-text">프로젝트 방향이 "배포 사전 위험도 예측"에서 <strong>"배포 이력 관리"로 전환</strong>되며 ELK는 범위를 벗어났습니다. 구축·운영 난이도를 다시 평가해 미채택을 결정했습니다.</span>
-      </div>
-
-      <div class="pf-reflect">
-        <div class="pf-reflect-label">회고</div>
-        <div class="pf-reflect-body">
-          <span class="pf-reflect-h">[도구 도입 판단의 한계]</span>
-          <p>돌이켜보면 ELK를 도입하기까지 고려해야 할 전제(데이터 누적량, 운영 부담, 프로젝트 방향성)가 많았는데, 이런 조건들을 충분히 검토하지 않고 <strong>"어떤 기술을 쓸지"에 초점을 맞춘 채 바로 구축부터 시작</strong>했습니다. 학습 프로젝트 특성상 로그 데이터가 충분히 쌓일 시간도 없고, ELK 스택을 운영·모니터링할 인력과 시간이 제한적인 상황에서, 결국 위험도 지표로 활용할 만큼의 의미 있는 패턴을 얻지 못했고 운영 비용만 커질 수 있는 구조였다는 점을 뒤늦게 깨달았습니다.</p>
-          <p>앞으로는 새로운 도구를 도입할 때 <strong>"이 기술이 의미 있으려면 어떤 데이터 규모·운영 인력·프로젝트 목표가 전제되어야 하는가"</strong>를 먼저 정의하고, 그 전제가 현재 프로젝트 단계와 맞는지부터 확인한 뒤 선택하려고 합니다. 이번 경험을 통해 <strong>기술 자체보다 프로젝트의 목적과 시점에 맞는지부터 따져보는 습관</strong>이 필요하다는 것을 배웠습니다.</p>
-        </div>
-      </div>
-    </div>
-
   </div>
 
   <div class="pf-links">

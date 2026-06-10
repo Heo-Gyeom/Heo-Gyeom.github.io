@@ -404,10 +404,9 @@ author_profile: true
 }
 .pf-trouble-img--sm img {
   max-height: 260px;
-  width: 100%;
-  object-fit: contain;
-  object-position: left;
-  background: #fafafa;
+  max-width: 100%;
+  width: auto;
+  background: transparent;
 }
 
 /* ───────── 사이드바 오버라이드 ───────── */
@@ -513,8 +512,8 @@ author_profile: true
           <div class="pf-contrib-head">DR 시나리오 설계</div>
           <img class="pf-contrib-img" src="{{ base_path }}/images/once-dr-architecture.png" alt="DR 시나리오 아키텍처">
           <div class="pf-contrib-body">
-            서울 ALB 장애 주입 → CloudFront Origin Failover 자동 전환 → Lambda 트리거로 도쿄 Pod 기동 → Aurora Planned Failover까지의
-            전체 전환 흐름을, <strong>장애 발생 시 자동으로 동작</strong>하도록 설계하였습니다.
+            <p><strong>장애 발생 시 자동으로 동작</strong>하도록 전체 전환 흐름을 설계했습니다.</p>
+            <p>서울 ALB 장애 주입 → CloudFront Origin Failover → Lambda 트리거로 도쿄 Pod 기동 → Aurora Planned Failover</p>
           </div>
         </div>
         <div class="pf-contrib-item">
@@ -603,7 +602,7 @@ author_profile: true
       </div>
     </div>
     <div class="pf-links">
-      <a class="pf-link" href="#">GitHub</a>
+      <a class="pf-link" href="https://github.com/sesac-nobreak-01/once-backend" target="_blank" rel="noopener">GitHub</a>
     </div>
 
 </section>
@@ -736,7 +735,7 @@ author_profile: true
   </div>
 
   <div class="pf-links">
-    <a class="pf-link" href="#">GitHub</a>
+    <a class="pf-link" href="https://github.com/BE4MAN/be4man-server" target="_blank" rel="noopener">GitHub</a>
   </div>
 
 </section>
@@ -898,7 +897,7 @@ document.addEventListener('DOMContentLoaded', function() {
   </div>
 
   <div class="pf-links">
-    <a class="pf-link" href="#">GitHub</a>
+    <a class="pf-link" href="https://github.com/mlops-team04/.github/tree/main" target="_blank" rel="noopener">GitHub</a>
   </div>
 
 </section>

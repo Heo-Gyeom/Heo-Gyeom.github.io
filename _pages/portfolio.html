@@ -439,9 +439,10 @@ author_profile: true
 <!-- ═══════════════ 인트로 ═══════════════ -->
 <div class="pf-intro">
   <div class="pf-intro-eyebrow">Portfolio</div>
-  <h1 class="pf-intro-headline">서비스의 운영 흐름을 파악합니다</h1>
+  <h1 class="pf-intro-headline">문제가 어느 층위에서 났는지부터 짚습니다</h1>
   <p class="pf-intro-desc">
-    <span class="pf-todo">데이터부터 인프라까지 이어지는 흐름 속에서, 서비스 구조와 운영 관점을 함께 학습하고 있습니다.</span>
+    데이터 · 백엔드 · 인프라로 이어지는 전체 흐름을 직접 다루며, 발생한 문제가
+    어느 레벨의 문제이고 어느 단계에서 풀어야 하는지를 짚어내는 것을 가장 큰 강점으로 삼고 있습니다.
   </p>
 </div>
 
@@ -449,15 +450,17 @@ author_profile: true
 <div class="pf-toc">
   <a class="pf-toc-item" href="#proj-once">
     <span class="pf-toc-num">01</span>
-    <span class="pf-toc-title">GlobalNews AI</span>
+    <span class="pf-toc-title">있슈</span>
+    <span class="pf-toc-tag">멀티리전 DR 자동화</span>
   </a>
   <a class="pf-toc-item" href="#proj-baepooman">
     <span class="pf-toc-num">02</span>
     <span class="pf-toc-title">배포맨</span>
+    <span class="pf-toc-tag">CI/CD 통합 관리 시스템</span>
   </a>
   <a class="pf-toc-item" href="#proj-mlops">
     <span class="pf-toc-num">03</span>
-    <span class="pf-toc-title">MLOps 파이프라인</span>
+    <span class="pf-toc-title">MLOps 2단계 아키텍처 설계</span>
   </a>
 </div>
 
@@ -475,21 +478,6 @@ author_profile: true
     Failover 전환 흐름과 트래픽 폭증 상황에서의 Aurora 복제 지연 · 데이터 정합성을
     시나리오 기반으로 수치 검증했습니다.
   </p>
-
-  <div class="pf-metrics">
-    <div class="pf-metric">
-      <span class="pf-metric-value">4분 23초</span>
-      <span class="pf-metric-label">Failover RTO</span>
-    </div>
-    <div class="pf-metric">
-      <span class="pf-metric-value">&lt; 1초</span>
-      <span class="pf-metric-label">RPO</span>
-    </div>
-    <div class="pf-metric">
-      <span class="pf-metric-value">100%</span>
-      <span class="pf-metric-label">데이터 정합성</span>
-    </div>
-  </div>
 
   <div class="pf-tags">
     <span class="pf-tag">AWS EKS</span>
@@ -529,9 +517,11 @@ author_profile: true
       <div class="pf-contrib-item">
         <div class="pf-contrib-head">데이터 정합성 검증</div>
         <div class="pf-contrib-body">
-          사용자 트래픽이 집중되는 상황에 Aurora 복제 지연이 서비스 SLO 안에 유지되는지를
-          검증했습니다. 부하가 집중되면 커넥션 풀 포화로 인해 서울→도쿄 복제 지연이 늘어나고
-          데이터 유실이 발생할 수 있다는 가설 아래, 부하 테스트를 설계·실행했습니다.
+          <p>서울→도쿄 Aurora Global DB 환경에서, 트래픽이 집중되면 커넥션 풀 포화로 복제 지연이 늘어나
+          데이터가 유실될 수 있다는 가설 아래 부하 테스트를 설계·실행했습니다.</p>
+          <p>채팅 메시지 2,000건을 사전 저장하고 20개 채팅방을 순차 반복 호출한 결과,
+          <strong>평균 쓰기 지연 약 50ms · 데이터 유실 0건 · 처리 성공률 97.9%</strong>를 확인했습니다.
+          나머지 2.1%는 트래픽 급증 구간의 503 응답(요청 거절)으로, 데이터 유실이 아니었습니다.</p>
         </div>
       </div>
 
@@ -561,10 +551,10 @@ author_profile: true
       <div class="pf-reflect">
         <div class="pf-reflect-label">회고</div>
         <div class="pf-reflect-body">
-          <p>이번 문제의 핵심은 <strong>"코드 버그"보다 인프라 동작을 모르는 상태에서 연결 재사용을 설계한 것</strong>이었습니다.</p>
-          <p>처음에는 커넥션 풀에서 일정 시간 지난 연결만 미리 정리하는 A안을 <em>"서버에서 끊는 타이밍과 겹치면 의미 없다"</em>는 추측만으로 기각했는데, 나중에야 NAT Gateway·Bedrock의 idle timeout이 수십~수백 초 수준이라는 걸 알게 됐습니다. 즉, <strong>A안이 나빴던 게 아니라 서버 타임아웃을 계측하지 않고 판단한 의사결정 과정이 문제</strong>였습니다.</p>
-          <p>또한 매 요청마다 새 연결을 맺는 현재 방식은 단기적으로는 안전하지만, <strong>동시 요청이 증가하면 애플리케이션/DB 커넥션 풀이 포화되며 응답 지연 또는 요청 실패가 발생할 수 있는 새로운 병목</strong>이 될 수 있습니다.</p>
-          <p>다음부터는 먼저 응답 시간과 에러율을 측정한 뒤, 그 수치를 근거로 설계를 결정하는 방식을 원칙으로 삼으려 합니다.</p>
+          <span class="pf-reflect-h">[측정 없이 내린 판단이 문제였다]</span>
+          <p>처음에는 매 요청마다 새 연결을 맺고 즉시 종료하는 방식에 자동 재시도를 더해 문제를 해결했고, 실제로 에러율도 0%까지 떨어졌습니다. 하지만 이 방식은 요청이 늘어날수록 연결 생성 비용이 커지고, 장기적으로는 또 다른 병목이 될 수 있었습니다.</p>
+          <p>이후 원인을 다시 살펴보니, 문제는 네트워크 자체보다 이미 끊긴 연결을 다시 쓰는 과정에 있었습니다. idle 상태에서는 실패하고 연속 호출은 정상이라는 패턴을 통해, 서버의 연결 종료 시점을 충분히 고려하지 못한 채 기본 커넥션 풀에 의존했던 점이 원인임을 확인했습니다.</p>
+          <p>당시에는 서버 타임아웃과 실패 패턴을 충분히 측정하지 않은 채 빠르게 결론을 내린 것이 아쉬웠습니다. 앞으로는 응답 시간과 에러율을 확인하여 결과값을 기반으로 문제를 해결해 나가겠습니다.</p>
         </div>
       </div>
     </div>

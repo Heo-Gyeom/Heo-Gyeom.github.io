@@ -470,12 +470,44 @@ author_profile: true
     margin-bottom: 2rem;
     opacity: 1 !important;
   }
+  /* 아바타: 찌그러짐 방지 — 고정 크기 원형으로 가운데 정렬 */
   .sidebar .author__avatar {
+    display: block;
+    width: 140px;
+    margin: 0 auto 1rem;
     text-align: center;
   }
-  .author__urls-wrapper,
-  .author__urls {
+  .sidebar .author__avatar img {
+    width: 140px !important;
+    height: 140px !important;
+    max-width: 140px;
+    border-radius: 50%;
+    object-fit: cover !important;
+    object-position: top center !important;
+  }
+  .author__content {
+    text-align: center;
+  }
+  /* 'Follow' 토글 버튼 숨기고 연락처를 항상 펼쳐서 표시 */
+  .author__urls-wrapper {
     width: 100%;
+    text-align: left;
+  }
+  .author__urls-wrapper > button {
+    display: none !important;
+  }
+  .author__urls {
+    display: block !important;
+    width: 100%;
+    position: static !important;
+    margin: 0 auto;
+    padding: 0;
+    border: 0 !important;
+    box-shadow: none !important;
+    background: transparent !important;
+  }
+  .author__urls::before {
+    display: none !important;
   }
   .author__urls a {
     overflow-wrap: anywhere;

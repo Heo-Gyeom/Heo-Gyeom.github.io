@@ -421,6 +421,94 @@ author_profile: true
 .author__urls-wrapper {
   display: block !important;
 }
+
+/* ───────── 반응형 안정화 ───────── */
+/* 모든 콘텐츠 가로 넘침 방지 */
+.pf-intro,
+.pf-toc,
+.pf-project,
+.pf-trouble,
+.pf-contrib-item {
+  max-width: 100%;
+  box-sizing: border-box;
+}
+.pf-intro-desc,
+.pf-project-summary,
+.pf-contrib-body,
+.pf-trouble-text,
+.pf-reflect-body,
+.pf-screen-caption {
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+/* 코드·링크 등 긴 문자열이 칸을 밀어내지 않도록 */
+.pf-trouble-text code,
+.pf-reflect-body code {
+  overflow-wrap: anywhere;
+  word-break: break-all;
+}
+/* 이미지는 항상 컨테이너 안에서 */
+.pf-arch img,
+.pf-screen img,
+.pf-contrib-img,
+.pf-trouble-img img {
+  max-width: 100%;
+  height: auto;
+}
+
+/* 중간 폭·모바일: 사이드바(프로필·이메일)가 본문으로 침범하지 않고
+   본문 위로 깔끔히 쌓이도록 정렬 */
+@media (max-width: 1024px) {
+  .sidebar {
+    position: relative !important;
+    top: auto !important;
+    float: none !important;
+    clear: both;
+    width: 100% !important;
+    max-width: 100% !important;
+    padding-right: 0 !important;
+    margin-bottom: 2rem;
+    opacity: 1 !important;
+  }
+  .sidebar .author__avatar {
+    text-align: center;
+  }
+  .author__urls-wrapper,
+  .author__urls {
+    width: 100%;
+  }
+  .author__urls a {
+    overflow-wrap: anywhere;
+    word-break: break-all;
+  }
+  .archive,
+  .page,
+  .page__inner-wrap {
+    width: 100% !important;
+    float: none !important;
+    clear: both;
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+  }
+}
+
+/* 좁은 모바일: 트러블슈팅 라벨/본문을 세로로 쌓아 가독성 확보 */
+@media (max-width: 480px) {
+  .pf-trouble-row {
+    grid-template-columns: 1fr;
+    gap: 0.25rem;
+  }
+  .pf-trouble-label {
+    justify-self: start;
+    display: inline-block;
+  }
+  .pf-toc-item {
+    flex-wrap: wrap;
+  }
+  .pf-intro-headline {
+    font-size: 1.35rem;
+  }
+}
 </style>
 
 <script>
@@ -450,13 +538,11 @@ author_profile: true
 <div class="pf-toc">
   <a class="pf-toc-item" href="#proj-once">
     <span class="pf-toc-num">01</span>
-    <span class="pf-toc-title">있슈</span>
-    <span class="pf-toc-tag">멀티리전 DR 자동화</span>
+    <span class="pf-toc-title">Issue있슈 <span style="font-weight:400;color:#888;">— 멀티리전 DR 자동화</span></span>
   </a>
   <a class="pf-toc-item" href="#proj-baepooman">
     <span class="pf-toc-num">02</span>
-    <span class="pf-toc-title">배포맨</span>
-    <span class="pf-toc-tag">CI/CD 통합 관리 시스템</span>
+    <span class="pf-toc-title">배포맨 <span style="font-weight:400;color:#888;">— CI/CD 통합 관리 시스템</span></span>
   </a>
   <a class="pf-toc-item" href="#proj-mlops">
     <span class="pf-toc-num">03</span>
@@ -469,7 +555,7 @@ author_profile: true
 <section class="pf-project" id="proj-once">
 
   <div class="pf-project-num">01</div>
-  <h2 class="pf-project-title">GlobalNews AI — 멀티리전 DR 자동화 플랫폼</h2>
+  <h2 class="pf-project-title">Issue있슈 — 멀티리전 DR 자동화 플랫폼</h2>
   <div class="pf-project-meta">
     <span>2026.04 ~ 2026.05</span><span>4주</span><span>4인 팀 · 팀장</span>
   </div>

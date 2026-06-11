@@ -21,8 +21,9 @@ redirect_from:
 
 | 취득일 | 자격증명 | 발급기관 |
 |--------|----------|----------|
-| 2026.02.13 | AWS Certified Solutions Architect – Associate | Amazon Web Services |
 | 2026.05.29 | Red Hat Certified System Administrator (RHCSA) | Red Hat |
+| 2026.02.13 | AWS Certified Solutions Architect – Associate | Amazon Web Services |
+| 2021.05 | 1종 대형 운전면허 | 경찰청 (운전면허시험관리단) |
 
 ---
 
@@ -30,9 +31,9 @@ redirect_from:
 
 | 기간 | 교육명 | 기관 |
 |------|--------|------|
-| 2024.04 ~ 2025.11 | AI 기술인력 양성 이어드림스쿨 | 중소벤처기업부 |
-| 2025.06 ~ 2025.11 | 공공SI SW개발자 양성과정 | 한국소프트웨어산업협회 |
 | 2025.12 ~ 2026.05 | 클라우드 DevOps 엔지니어 양성과정 | 청년취업사관학교 (SeSAC) |
+| 2025.06 ~ 2025.11 | 공공SI SW개발자 양성과정 | 한국소프트웨어산업협회 |
+| 2024.04 ~ 2025.11 | AI 기술인력 양성 이어드림스쿨 | 중소벤처기업부 |
 
 ---
 
@@ -40,8 +41,8 @@ redirect_from:
 
 | 기간 | 활동명 / 수상명 | 기관 |
 |------|----------------|------|
-| 2025.11 | 공공SI SW개발자 양성과정 최종 프로젝트 장려상 | 한국소프트웨어산업협회 |
 | 2026.05 | [OpenStack 오픈소스 기여 — Upstream Merge ↗](https://review.opendev.org/c/openstack/openstacksdk/+/963982/8#message-b7c6c74e88490cc631c3c2667badfe5df80cc9dc) | 오픈소스 컨트리뷰션 아카데미 (OSSCA) |
+| 2025.11 | 공공SI SW개발자 양성과정 최종 프로젝트 장려상 | 한국소프트웨어산업협회 |
 
 ---
 
